@@ -1,0 +1,32 @@
+name: Publish NuGet Package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Pack
+      run: dotnet pack --configuration Release --no-build --output ./nuget
+
+    - name: Publish to NuGet
+      env:
+        NUGET_API_TOKEN: ${{ secrets.NUGET_API_TOKEN }}
+      run: dotnet nuget push ./nuget/*.nupkg -k $NUGET_API_TOKEN -s https://api.nuget.org/v3/index.json
