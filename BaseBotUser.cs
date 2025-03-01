@@ -122,7 +122,7 @@ public abstract class BaseBotUser {
 
 
 
-    public Task<Message> SendTextMessageAsync(string? text, IReplyMarkup? markup = null, ParseMode? mode = null, bool webPreview = true) {
+    public Task<Message> SendTextMessageAsync(string? text, ReplyMarkup? markup = null, ParseMode? mode = null, bool webPreview = true) {
         return client.SendMessage(
             chatId: chatId,
             text: string.IsNullOrEmpty(text) ? "..." : text,
@@ -136,7 +136,7 @@ public abstract class BaseBotUser {
     }
 
 
-    public Task<Message> SendDocumentAsync(string text, InputFile file, IReplyMarkup? markup = null, ParseMode? mode = null) {
+    public Task<Message> SendDocumentAsync(string text, InputFile file, ReplyMarkup? markup = null, ParseMode? mode = null) {
         return client.SendDocument(
             chatId: chatId,
             document: file,
@@ -149,13 +149,13 @@ public abstract class BaseBotUser {
 
 
 
-    public Task<Message> SendDocumentAsync(string text, byte[] image, IReplyMarkup? markup = null, ParseMode? mode = null) {
+    public Task<Message> SendDocumentAsync(string text, byte[] image, ReplyMarkup? markup = null, ParseMode? mode = null) {
         return SendDocumentAsync(text, InputFile.FromStream(new MemoryStream(image)), markup, mode);
     }
 
 
 
-    public Task<Message> SendDocumentAsync(string text, string imageId, IReplyMarkup? markup = null, ParseMode? mode = null) {
+    public Task<Message> SendDocumentAsync(string text, string imageId, ReplyMarkup? markup = null, ParseMode? mode = null) {
         return SendDocumentAsync(text, InputFile.FromString(imageId), markup, mode);
     }
 
@@ -163,7 +163,7 @@ public abstract class BaseBotUser {
 
 
 
-    public Task<Message> SendPhotoAsync(InputFile file, string? text = null, IReplyMarkup? markup = null, ParseMode? mode = null) {
+    public Task<Message> SendPhotoAsync(InputFile file, string? text = null, ReplyMarkup? markup = null, ParseMode? mode = null) {
         return client.SendPhoto(
             chatId: chatId,
             photo: file,
@@ -176,13 +176,13 @@ public abstract class BaseBotUser {
 
 
 
-    public Task<Message> SendPhotoAsync(byte[] image, string? text = null, IReplyMarkup? markup = null, ParseMode? mode = null) {
+    public Task<Message> SendPhotoAsync(byte[] image, string? text = null, ReplyMarkup? markup = null, ParseMode? mode = null) {
         return SendPhotoAsync(InputFile.FromStream(new MemoryStream(image)), text, markup, mode);
     }
 
 
 
-    public Task<Message> SendPhotoAsync(string imageId, string? text = null, IReplyMarkup? markup = null, ParseMode? mode = null) {
+    public Task<Message> SendPhotoAsync(string imageId, string? text = null, ReplyMarkup? markup = null, ParseMode? mode = null) {
         return SendPhotoAsync(InputFile.FromString(imageId), text, markup, mode);
     }
 
