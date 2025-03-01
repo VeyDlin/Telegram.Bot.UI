@@ -325,5 +325,5 @@ public abstract class MessagePage : IDisposable {
         new() { botUser = botUser, parrent = this };
 
     protected MenuNavigatePanel MenuNavigatePanel() =>
-    new() { botUser = botUser, parrent = this };
+        new() { botUser = botUser, parrent = this };
 }

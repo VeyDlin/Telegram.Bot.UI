@@ -9,7 +9,7 @@ public class MenuCheckboxModal : MenuElement {
     public IEnumerable<MenuSelector> buttons { get; init; }
     public IEnumerable<MenuModalDetails>? details { get; init; }
     public string? title { get; set; }
-
+    
     private MenuCheckboxModalPage modalPage;
     public override int columns { get => modalPage.columns; set => modalPage.columns = value; }
     public List<int> selected => modalPage.selected;

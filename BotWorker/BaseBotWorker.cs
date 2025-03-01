@@ -17,7 +17,7 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
     protected SafeStopManager safeStop = new();
     public bool isSafeStopSet => safeStop.isStopSet;
 
-    public DateTime startTime { get; private set; } = DateTime.Now.ToUniversalTime();
+    public DateTime startTime { get; private set; } = DateTime.UtcNow;
     public PageResourceLoader pageResourceLoader { get; protected set; } = new();
     public LocalizationPack? localizationPack { get; set; } = null;
 
@@ -41,7 +41,7 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
 
 
     public async Task StartAsync() {
-        startTime = DateTime.Now.ToUniversalTime();
+        startTime = DateTime.UtcNow;
         await StartHandleAsync();
     }
 
@@ -92,7 +92,7 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
         }
 
         if (safeStop.isStopSet) {
-            var stopMessage = await user.HandleStoppingProcess(message); // TODO: сделать проще
+            var stopMessage = await user.HandleStoppingProcess(message); // TODO: Make it easier
             if (stopMessage is not null) {
                 await user.ShowAlertAsync(stopMessage, callbackQuery.Id);
             }
@@ -134,7 +134,7 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
         }
 
         if (safeStop.isStopSet) {
-            var stopMessage = await user.HandleStoppingProcess(message); // TODO: сделать проще
+            var stopMessage = await user.HandleStoppingProcess(message); // TODO: Make it easier
             if (stopMessage is not null) {
                 await user.SendTextMessageAsync(stopMessage);
             }
@@ -162,7 +162,7 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
             return;
         }
 
-        if (messageText.StartsWith("/")) {
+        if (user.enableCommands && messageText.StartsWith("/")) {
             string[] parts = messageText.Split(" ");
             string command = parts[0].Substring(1).Trim().ToLower();
             string[] arguments = parts.Skip(1).Select(x => x.Trim()).ToArray();
@@ -184,7 +184,7 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
 
         var user = GetOrCreateChatUser(message.Chat.Id, botClient, cancellationToken);
 
-        // TODO: нужно ли skipMessagesBeforeStart? HandlePermissiveAsync? HandleAcceptLicense?
+        // TODO: do need a skipMessagesBeforeStart? HandlePermissiveAsync? HandleAcceptLicense?
 
         await user.HandleSuccessPayment(payment);
     }

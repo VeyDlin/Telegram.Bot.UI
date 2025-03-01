@@ -6,9 +6,7 @@ namespace Telegram.Bot.UI.MenuBuilder.Elements;
 public class MenuLink : MenuElement {
     public required string title { get; set; }
     public required string url { get; set; }
-
-
-
+    public string temp { get; set; } = "{{ title }}";
 
 
 
@@ -17,9 +15,15 @@ public class MenuLink : MenuElement {
             return new();
         }
 
+        var models = parrent.InheritedRequestModel();
+        models.Add(new {
+            title = TemplateEngine.Render(title, models, botUser.localization),
+            url = url
+        });
+
         return new() {
             InlineKeyboardButton.WithUrl(
-                text: TemplateEngine.Render(title, parrent.InheritedRequestModel(), botUser.localization),
+                text: TemplateEngine.Render(temp, models, botUser.localization),
                 url: url
             )
         };

@@ -17,6 +17,7 @@ public abstract class BaseBotUser {
     public LocalizationManager localization { get; private set; } = new();
     public ParseMode parseMode { get; set; } = ParseMode.Markdown;
     public bool acceptLicense { get; set; } = true;
+    public bool enableCommands { get; set; } = true;
 
 
 

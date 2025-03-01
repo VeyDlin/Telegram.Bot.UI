@@ -16,7 +16,6 @@ public class MenuModalSelector {
 
 
 
-
     public static IEnumerable<(MenuModalSelector item, int index)> WithIndex(IEnumerable<MenuModalSelector> source) {
         return source.Select((item, index) => (item, index));
     }

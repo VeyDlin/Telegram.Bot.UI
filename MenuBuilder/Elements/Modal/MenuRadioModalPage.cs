@@ -4,7 +4,6 @@ using Telegram.Bot.UI.Utils;
 namespace Telegram.Bot.UI.MenuBuilder.Elements.Modal;
 
 
-
 public class MenuRadioModalPage : MessagePage {
     private MenuRadio buttons;
     public int columns { get => buttons.columns; set => buttons.columns = value; }
@@ -47,8 +46,6 @@ public class MenuRadioModalPage : MessagePage {
     public override string? RequestMessageResource() => selectDetails?.messageResource ?? parrent?.RequestMessageResource();
     public override (string resource, WallpaperLoader loader)? RequestWallpaper() => selectDetails?.wallpaper;
     public override object? RequestModel() => selectDetails?.model ?? parrent?.RequestModel();
-
-
 
 
 

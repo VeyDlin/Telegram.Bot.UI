@@ -65,7 +65,6 @@ public class PageResourceLoader {
 
 
     public PageInfo<TConfig> LoadPage<TConfig>(string pageNnamespace) {
-
         return (PageInfo<TConfig>)pageInfoCache.GetOrAdd($"{pageNnamespace}_{typeof(TConfig).Name}", key => {
             if (GetOsPath(pageNnamespace) is not string path) {
                 throw new Exception("path is null");

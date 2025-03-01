@@ -16,13 +16,9 @@ public class MenuRadio : MenuElement {
 
 
 
-
-
     protected override void OnDispose() {
         botUser.callbackFactory.Unsubscribe(callbackIdList);
     }
-
-
 
 
 
@@ -34,8 +30,6 @@ public class MenuRadio : MenuElement {
             onSelect?.Invoke(selectButton);
         }
     }
-
-
 
 
 

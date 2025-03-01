@@ -16,13 +16,9 @@ public class MenuCheckboxGroup : MenuElement {
 
 
 
-
-
     protected override void OnDispose() {
         botUser.callbackFactory.Unsubscribe(callbackIdList);
     }
-
-
 
 
 
@@ -39,8 +35,6 @@ public class MenuCheckboxGroup : MenuElement {
 
 
 
-
-
     public void Unselect(string id) {
         if (ButtonFromId(id) is not (MenuSelector button, int index)) {
             return;
@@ -54,8 +48,6 @@ public class MenuCheckboxGroup : MenuElement {
 
 
 
-
-
     public bool IsSelect(string id) {
         if (ButtonFromId(id) is not (MenuSelector button, int index)) {
             return false;
@@ -63,8 +55,6 @@ public class MenuCheckboxGroup : MenuElement {
 
         return selected.Contains(index);
     }
-
-
 
 
 
@@ -76,8 +66,6 @@ public class MenuCheckboxGroup : MenuElement {
 
         return select.First();
     }
-
-
 
 
 

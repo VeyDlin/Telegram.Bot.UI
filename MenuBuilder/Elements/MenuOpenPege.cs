@@ -7,6 +7,7 @@ public class MenuOpenPege : MenuElement {
     public required MessagePage page { get; set; }
     public string? title { get; set; }
     public bool changeParrent { get; set; } = true;
+    public string temp { get; set; } = "{{ title }}";
     private string? callbackId = null;
 
 
@@ -14,8 +15,6 @@ public class MenuOpenPege : MenuElement {
     protected override void OnDispose() {
         botUser.callbackFactory.Unsubscribe(callbackId);
     }
-
-
 
 
 
@@ -33,9 +32,15 @@ public class MenuOpenPege : MenuElement {
             await page.UpdatePageAsync(messageId, chatId);
         });
 
+        var models = parrent.InheritedRequestModel();
+        models.Add(new {
+            title = TemplateEngine.Render(title ?? page.title ?? "...", models, botUser.localization),
+            changeParrent = changeParrent
+        });
+
         return new() {
             InlineKeyboardButton.WithCallbackData(
-                text: TemplateEngine.Render(title ?? page.title ?? "...", parrent.InheritedRequestModel(), botUser.localization),
+                text: TemplateEngine.Render(temp, models, botUser.localization),
                 callbackData: callbackId
             )
         };

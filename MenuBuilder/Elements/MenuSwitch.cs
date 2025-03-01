@@ -6,6 +6,7 @@ namespace Telegram.Bot.UI.MenuBuilder.Elements;
 
 public class MenuSwitch : MenuElement {
     public required List<MenuSelector> buttons { get; init; }
+    public string temp { get; set; } = "{{ title }}";
     public int selected { get; set; } = 0;
     public string selectedId { get => buttons[selected].id!; }
     public MenuSelector selectButton { get => buttons[selected]; }
@@ -21,8 +22,6 @@ public class MenuSwitch : MenuElement {
 
 
 
-
-
     public void Select(string id) {
         var select = buttons.Select((button, index) => (button, index)).Where(x => x.button.id == id);
 
@@ -31,8 +30,6 @@ public class MenuSwitch : MenuElement {
             onUpdate?.Invoke(selectButton);
         }
     }
-
-
 
 
 
@@ -58,9 +55,15 @@ public class MenuSwitch : MenuElement {
 
         var button = buttons[selected];
 
+        var models = parrent.InheritedRequestModel();
+        models.Add(new {
+            selected = selected,
+            title = TemplateEngine.Render(button.title, models, botUser.localization)
+        });
+
         return new() {
             InlineKeyboardButton.WithCallbackData(
-                text: TemplateEngine.Render(button.title, parrent.InheritedRequestModel(), botUser.localization),
+                text: TemplateEngine.Render(temp, models, botUser.localization),
                 callbackData: callbackId
             )
         };
