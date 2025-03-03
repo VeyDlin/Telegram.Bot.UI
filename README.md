@@ -2,6 +2,9 @@
 
 Library for creating Telegram bot interfaces based on [Telegram.Bot](https://github.com/TelegramBots/Telegram.Bot)
 
+Visit the repository with a demo project of a photo editor bot [Telegram.Bot.Demo](https://github.com/VeyDlin/Telegram.Bot.UI.Demo)
+
+
 ## 📑 Table of Contents
 
 - [Features](#features)
