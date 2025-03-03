@@ -4,18 +4,6 @@ Library for creating Telegram bot interfaces based on [Telegram.Bot](https://git
 
 Visit the repository with a demo project of a photo editor bot [Telegram.Bot.Demo](https://github.com/VeyDlin/Telegram.Bot.UI.Demo)
 
-
-## 📑 Table of Contents
-
-- [Features](#features)
-- [Installation](#installation)
-- [Getting Started](#getting-started)
-- [Bot Operation Modes](#bot-operation-modes)
-- [Creating Interface Pages](#creating-interface-pages)
-- [Interface Components](#interface-components)
-- [Localization](#localization)
-- [Resource Structure](#resource-structure)
-
 ## ✨ Features
 
 - 🔄 Different bot operation modes:
