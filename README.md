@@ -2,7 +2,7 @@
 
 Library for creating Telegram bot interfaces based on [Telegram.Bot](https://github.com/TelegramBots/Telegram.Bot)
 
-Visit the repository with a demo project of a photo editor bot [Telegram.Bot.Demo](https://github.com/VeyDlin/Telegram.Bot.UI.Demo)
+Visit the repository with a demo project of a photo editor bot [Telegram.Bot.UI.Demo](https://github.com/VeyDlin/Telegram.Bot.UI.Demo)
 
 ## ✨ Features
 
@@ -35,6 +35,12 @@ The library provides numerous interactive components:
 - `MenuRadioModal` - Modal window with radio buttons
 - `MenuSplit` - Element separator (line break)
 - `MenuSwitch` - Carousel option switch (one button)
+
+## 📦 Nuget
+The Telegram.Bot.UI package is available via [NuGet](https://www.nuget.org/packages/Telegram.Bot.UI)!
+```
+dotnet add package Telegram.Bot.UI
+```
 
 ## 🚀 Getting Started
 
