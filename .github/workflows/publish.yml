@@ -1,32 +1,64 @@
-name: Publish NuGet Package
+name: Auto GitHub Release from csproj
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: write
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '9.0.x'
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore
+      - name: Restore dependencies
+        run: dotnet restore
 
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
 
-    - name: Pack
-      run: dotnet pack --configuration Release --no-build --output ./nuget
+      - name: Pack
+        run: dotnet pack --configuration Release --no-build --output ./nuget
 
-    - name: Publish to NuGet
-      env:
-        NUGET_API_TOKEN: ${{ secrets.NUGET_API_TOKEN }}
-      run: dotnet nuget push ./nuget/*.nupkg -k $NUGET_API_TOKEN -s https://api.nuget.org/v3/index.json
+      - name: Get current version from csproj
+        id: get_version
+        run: |
+          ver=$(grep -oPm1 "(?<=<Version>)[^<]+" *.csproj)
+          echo "version=$ver" >> $GITHUB_OUTPUT
+
+      - name: Check if tag exists
+        id: tag_check
+        run: |
+          if git rev-parse "v${{ steps.get_version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create tag and release
+        if: steps.tag_check.outputs.exists == 'false'
+        run: |
+          git tag "v${{ steps.get_version.outputs.version }}"
+          git push origin "v${{ steps.get_version.outputs.version }}"
+          gh release create "v${{ steps.get_version.outputs.version }}" --title "Release ${{ steps.get_version.outputs.version }}" --generate-notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to NuGet
+        if: steps.tag_check.outputs.exists == 'false'
+        env:
+          NUGET_API_TOKEN: ${{ secrets.NUGET_API_TOKEN }}
+        run: dotnet nuget push ./nuget/*.nupkg -k $NUGET_API_TOKEN -s https://api.nuget.org/v3/index.json
