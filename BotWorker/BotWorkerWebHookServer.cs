@@ -43,7 +43,7 @@ public class BotWorkerWebHookServer<T> : BotWorkerWebHook<T> where T : BaseBotUs
     private async Task HandlePostRequestAsync(HttpListenerContext context) {
         try {
             using (var reader = new StreamReader(context.Request.InputStream)) {
-                if (ValidateTelegramHeader(context.Request.Headers["X-Telegram-Bot-Api-Secret-Token"])) {
+                if (!ValidateTelegramHeader(context.Request.Headers["X-Telegram-Bot-Api-Secret-Token"])) {
                     context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                     return;
                 }
