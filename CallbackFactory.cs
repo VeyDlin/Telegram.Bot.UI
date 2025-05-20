@@ -63,7 +63,6 @@ public class CallbackFactory {
         if (callbackCache.TryGetValue(callbackId, out var callback)) {
             if (callback.onCallback is not null) {
                 Task.Run(() => callback.onCallback(callbackQueryId, messageId, chatId));
-                ;
             }
             return true;
         }
