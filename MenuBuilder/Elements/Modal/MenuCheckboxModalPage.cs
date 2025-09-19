@@ -17,7 +17,7 @@ public class MenuCheckboxModalPage : MessagePage {
 
     public override string title => string.Join(", ", buttons.selectButton.Select(x => x.title));
     public override string? pageResource => lastSelectDetails?.pageResource ?? parrent?.pageResource;
-    private List<MenuModalDetails> selectDetails => details?.Where(x => buttons.selectButton.Select(x => x.id).Contains(x.id)).ToList() ?? new();
+    public List<MenuModalDetails> selectDetails => details?.Where(x => buttons.selectButton.Select(x => x.id).Contains(x.id)).ToList() ?? new();
 
     public event MenuCheckboxGroup.UpdateHandler? onUpdate;
 
@@ -25,9 +25,11 @@ public class MenuCheckboxModalPage : MessagePage {
 
     public MenuCheckboxModalPage(IEnumerable<MenuSelector> buttons, IEnumerable<MenuModalDetails>? details, BaseBotUser botUser) : base(botUser) {
         this.buttons = MenuCheckboxGroup(buttons);
-        this.buttons.onUpdate += (selectButton, isSelect) => {
+        this.buttons.onUpdate += async (selectButton, isSelect) => {
             lastSelectDetails = details?.Where(x => x.id == selectButton.id).FirstOrNull();
-            onUpdate?.Invoke(selectButton, isSelect);
+            if (onUpdate is not null) {
+                await onUpdate.Invoke(selectButton, isSelect);
+            }
         };
 
         this.details = details;
@@ -36,7 +38,7 @@ public class MenuCheckboxModalPage : MessagePage {
 
 
 
-    public void Select(string id) => buttons.Select(id);
+    public Task SelectAsync(string id) => buttons.SelectAsync(id);
 
 
 
@@ -47,17 +49,25 @@ public class MenuCheckboxModalPage : MessagePage {
 
 
     public override string? RequestMessageResource() => lastSelectDetails?.messageResource ?? parrent?.RequestMessageResource();
-    public override (string resource, WallpaperLoader loader)? RequestWallpaper() => lastSelectDetails?.wallpaper;
-    public override object? RequestModel() => lastSelectDetails?.model ?? parrent?.RequestModel();
+    public override Task<(string resource, WallpaperLoader loader)?> RequestWallpaperAsync() => Task.FromResult(lastSelectDetails?.wallpaper);
+    public override async Task<object?> RequestModelAsync() {
+        if (lastSelectDetails?.model is not null) {
+            return lastSelectDetails?.model;
+        }
+        if (parrent is not null) {
+            return await parrent.RequestModelAsync();
+        }
+        return null;
+    }
 
 
 
 
 
-    public override List<ButtonsPage> RequestPageComponents() {
+    public override Task<List<ButtonsPage>?> RequestPageComponentsAsync() {
         webPreview = lastSelectDetails?.webPreview ?? parrent?.webPreview ?? true;
 
-        return ButtonsPage.Page([
+        return ButtonsPage.PageTask([
             [buttons]
         ]);
     }

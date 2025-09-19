@@ -4,5 +4,5 @@ namespace Telegram.Bot.UI.MenuBuilder.Elements;
 
 
 public class MenuSplit : MenuElement {
-    public override List<InlineKeyboardButton> Build() => new();
+    public override Task<List<InlineKeyboardButton>> BuildAsync() => Task.FromResult<List<InlineKeyboardButton>>(new());
 }

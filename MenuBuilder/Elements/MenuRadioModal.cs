@@ -6,8 +6,8 @@ namespace Telegram.Bot.UI.MenuBuilder.Elements;
 
 
 public class MenuRadioModal : MenuElement {
-    public IEnumerable<MenuSelector> buttons { get; init; }
-    public IEnumerable<MenuModalDetails>? details { get; init; }
+    public IEnumerable<MenuSelector> buttons { get; set; } = [];
+    public IEnumerable<MenuModalDetails>? details { get; set; } = [];
     public string? title { get; set; }
 
     private MenuRadioModalPage modalPage;
@@ -34,7 +34,7 @@ public class MenuRadioModal : MenuElement {
 
 
 
-    public void Select(string id) => modalPage.Select(id);
+    public Task SelectAsync(string id) => modalPage.SelectAsync(id);
 
 
 
@@ -45,7 +45,7 @@ public class MenuRadioModal : MenuElement {
 
 
 
-    public override List<InlineKeyboardButton> Build() {
+    public override async Task<List<InlineKeyboardButton>> BuildAsync() {
         if (hide) {
             return new();
         }
@@ -58,7 +58,7 @@ public class MenuRadioModal : MenuElement {
         });
 
 
-        var models = parrent.InheritedRequestModel();
+        var models = await parrent.InheritedRequestModelAsync();
         models.Add(new {
             title = TemplateEngine.Render(modalPage.title, models, botUser.localization)
         });

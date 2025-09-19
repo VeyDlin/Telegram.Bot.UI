@@ -6,15 +6,16 @@ namespace Telegram.Bot.UI.BotWorker;
 
 
 class BotWorkerPullingUpdateHandler : IUpdateHandler {
-    public required Func<ITelegramBotClient, Update, CancellationToken, Task> update { init; get; }
-    public required Func<ITelegramBotClient, Exception, CancellationToken, Task> error { init; get; }
-    public Task HandleErrorAsync(ITelegramBotClient c, Exception e, HandleErrorSource s, CancellationToken t) => this.error(c, e, t);  
-    public Task HandleUpdateAsync(ITelegramBotClient c, Update u, CancellationToken t) => this.update(c, u, t);
+    public required Func<Update, CancellationToken, Task> update { init; get; }
+    public required Func<Exception, CancellationToken, Task> error { init; get; }
+    public Task HandleErrorAsync(ITelegramBotClient c, Exception e, HandleErrorSource s, CancellationToken t) => this.error(e, t);  
+    public Task HandleUpdateAsync(ITelegramBotClient c, Update u, CancellationToken t) => this.update(u, t);
 }
 
 
 public class BotWorkerPulling<T> : BaseBotWorker<T> where T : BaseBotUser {
     protected TelegramBotClient? botClient;
+    public override ITelegramBotClient client => botClient!;
     public required string botToken { init => botClient = new(value); }
 
 

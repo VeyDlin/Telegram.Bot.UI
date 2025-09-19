@@ -18,7 +18,7 @@ public class MenuOpenPege : MenuElement {
 
 
 
-    public override List<InlineKeyboardButton> Build() {
+    public override async Task<List<InlineKeyboardButton>> BuildAsync() {
         if (hide) {
             return new();
         }
@@ -32,7 +32,7 @@ public class MenuOpenPege : MenuElement {
             await page.UpdatePageAsync(messageId, chatId);
         });
 
-        var models = parrent.InheritedRequestModel();
+        var models = await parrent.InheritedRequestModelAsync();
         models.Add(new {
             title = TemplateEngine.Render(title ?? page.title ?? "...", models, botUser.localization),
             changeParrent = changeParrent

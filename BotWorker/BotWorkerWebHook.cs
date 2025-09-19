@@ -6,6 +6,7 @@ namespace Telegram.Bot.UI.BotWorker;
 
 public class BotWorkerWebHook<T> : BaseBotWorker<T> where T : BaseBotUser {
     protected TelegramBotClient? botClient;
+    public override ITelegramBotClient client => botClient!;
     public required string botHostAddress { protected get; init; }
     public required string botSecretToken { protected get; init; }
     public required string botToken { protected get; init; }
@@ -33,10 +34,10 @@ public class BotWorkerWebHook<T> : BaseBotWorker<T> where T : BaseBotUser {
 
     public async Task UpdateHandlerAsync(Update update) {
         try {
-            await UpdateHandlerAsync(botClient!, update, cancellationTokenSource.Token);
+            await UpdateHandlerAsync(update, cancellationTokenSource.Token);
         } catch (Exception ex) {
             try {
-                await ErrorHandlerAsync(botClient!, ex, cancellationTokenSource.Token);
+                await ErrorHandlerAsync(ex, cancellationTokenSource.Token);
             } catch { }
         }
     }

@@ -16,7 +16,7 @@ public abstract class MenuElement : IDisposable {
     }
 
 
-    public abstract List<InlineKeyboardButton> Build();
+    public abstract Task<List<InlineKeyboardButton>> BuildAsync();
 
 
     public void Dispose() {

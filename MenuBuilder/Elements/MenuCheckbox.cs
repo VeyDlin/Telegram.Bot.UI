@@ -1,4 +1,5 @@
-﻿using Telegram.Bot.Types.ReplyMarkups;
+﻿using System.Threading.Tasks;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Telegram.Bot.UI.MenuBuilder.Elements;
 
@@ -8,7 +9,7 @@ public class MenuCheckbox : MenuElement {
     public string temp { get; set; } = "{{ if selected }}✅{{ end }} {{ title }}";
     public bool isSelected { get; private set; }
     private string? callbackId = null;
-    public delegate void UpdateHandler(bool isSelected);
+    public delegate Task UpdateHandler(bool isSelected);
     public event UpdateHandler? onUpdate;
 
 
@@ -21,16 +22,18 @@ public class MenuCheckbox : MenuElement {
 
 
 
-    public void Select(bool isSelected) {
+    public async Task SelectAsync(bool isSelected) {
         this.isSelected = isSelected;
-        onUpdate?.Invoke(isSelected);
+        if (onUpdate is not null) {
+            await onUpdate.Invoke(isSelected);
+        }
     }
 
 
 
 
 
-    public override List<InlineKeyboardButton> Build() {
+    public override async Task<List<InlineKeyboardButton>> BuildAsync() {
         if (hide) {
             return new();
         }
@@ -40,11 +43,13 @@ public class MenuCheckbox : MenuElement {
         callbackId = botUser.callbackFactory.Subscribe(botUser.chatId, async (callbackQueryId, messageId, chatId) => {
             isSelected = !isSelected;
 
-            onUpdate?.Invoke(isSelected);
+            if (onUpdate is not null) {
+                await onUpdate.Invoke(isSelected);
+            }
             await parrent.UpdatePageAsync(messageId, chatId);
         });
 
-        var models = parrent.InheritedRequestModel();
+        var models = await parrent.InheritedRequestModelAsync();
         models.Add(new {
             selected = isSelected,
             title = TemplateEngine.Render(title, models, botUser.localization)

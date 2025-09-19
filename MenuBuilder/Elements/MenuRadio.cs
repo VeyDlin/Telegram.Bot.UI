@@ -5,13 +5,13 @@ namespace Telegram.Bot.UI.MenuBuilder.Elements;
 
 
 public class MenuRadio : MenuElement {
-    public required List<MenuSelector> buttons { get; init; }
+    public List<MenuSelector> buttons { get; set; } = [];
     public string temp { get; set; } = "{{ if selected }}✅{{ end }} {{ title }}";
     public int selected { get; private set; } = 0;
     public string selectedId => selectButton.id;
     public MenuSelector selectButton => buttons[selected];
     public List<string> callbackIdList = new();
-    public delegate void SelectHandler(MenuSelector selectButton);
+    public delegate Task SelectHandler(MenuSelector selectButton);
     public event SelectHandler? onSelect;
 
 
@@ -22,18 +22,28 @@ public class MenuRadio : MenuElement {
 
 
 
-    public void Select(string id) {
+    public async Task SetButtonsAsync(List<MenuSelector> buttons) {
+        this.buttons = buttons;
+        await BuildAsync();
+    }
+
+
+
+    public async Task SelectAsync(string id) {
         var select = buttons.Select((button, index) => (button, index)).Where(x => x.button.id == id);
 
         if (select.Any() && select.First().index != selected) {
             selected = select.First().index;
-            onSelect?.Invoke(selectButton);
+
+            if (onSelect is not null) {
+                await onSelect.Invoke(selectButton);
+            }
         }
     }
 
 
 
-    public override List<InlineKeyboardButton> Build() {
+    public override async Task<List<InlineKeyboardButton>> BuildAsync() {
         if (hide) {
             return new();
         }
@@ -50,14 +60,16 @@ public class MenuRadio : MenuElement {
         foreach (var (button, index) in MenuSelector.WithIndex(buttons)) {
             var callbackId = botUser.callbackFactory.Subscribe(botUser.chatId, async (callbackQueryId, messageId, chatId) => {
                 selected = index;
-                onSelect?.Invoke(selectButton);
+                if (onSelect is not null) {
+                    await onSelect.Invoke(selectButton);
+                }
                 await parrent.UpdatePageAsync(messageId, chatId);
             });
 
             callbackIdList.Add(callbackId);
 
 
-            var models = parrent.InheritedRequestModel();
+            var models = await parrent.InheritedRequestModelAsync();
             models.Add(new {
                 selected = selected == index,
                 title = TemplateEngine.Render(button.title, models, botUser.localization)

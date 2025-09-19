@@ -61,11 +61,10 @@ public abstract class MessagePage : IDisposable {
 
 
 
-
-    public virtual List<ButtonsPage>? RequestPageComponents() => null;
+    public virtual Task<List<ButtonsPage>?> RequestPageComponentsAsync() => Task.FromResult<List<ButtonsPage>?>(null);
     public virtual string? RequestMessageResource() => null;
-    public virtual object? RequestModel() => null;
-    public virtual (string resource, WallpaperLoader loader)? RequestWallpaper() => null;
+    public virtual Task<object?> RequestModelAsync() => Task.FromResult<object?>(null);
+    public virtual Task<(string resource, WallpaperLoader loader)?> RequestWallpaperAsync() => Task.FromResult<(string, WallpaperLoader)?>(null);
 
 
 
@@ -76,7 +75,7 @@ public abstract class MessagePage : IDisposable {
             return null;
         }
 
-        if (RequestWallpaper() is not (string wallpaperResource, WallpaperLoader loader)) {
+        if (await RequestWallpaperAsync() is not (string wallpaperResource, WallpaperLoader loader)) {
             return null;
         }
 
@@ -103,12 +102,12 @@ public abstract class MessagePage : IDisposable {
 
 
 
-    public List<object> InheritedRequestModel() {
+    public async Task<List<object>> InheritedRequestModelAsync() {
         var model = new List<object>();
         var currentPage = this;
 
         while (currentPage is not null) {
-            if (currentPage.RequestModel() is object currentModel) {
+            if (await currentPage.RequestModelAsync() is object currentModel) {
                 model.Add(currentModel);
             }
 
@@ -137,7 +136,7 @@ public abstract class MessagePage : IDisposable {
         }
 
         // text
-        var text = RenderTemplateText(RequestMessageResource(), InheritedRequestModel());
+        var text = RenderTemplateText(RequestMessageResource(), await InheritedRequestModelAsync());
 
         var template = wallpaper + (text ?? string.Empty);
 
@@ -173,38 +172,93 @@ public abstract class MessagePage : IDisposable {
 
 
 
-    public async Task OpenSubPageAsync(MessagePage page) {
+    public async Task<Message> OpenSubPageAsync(MessagePage page) {
         page.parrent = this;
         page.backToParent = true;
-        lastMessage = await botUser.EditMessageTextAsync(lastMessage!.MessageId, lastMessage!.Chat.Id, await page.text, page.BuildSelectedPage(), webPreview: page.webPreview);
+        lastMessage = await botUser.EditMessageTextAsync(
+            lastMessage!.MessageId, 
+            lastMessage!.Chat.Id, 
+            await page.text, 
+            await page.BuildSelectedPageAsync(), 
+            webPreview: page.webPreview
+        );
         page.lastMessage = lastMessage;
+        return lastMessage;
     }
 
 
 
 
 
-    public async Task OpenPageAsync(MessagePage page) {
+    public async Task<Message> OpenPageAsync(MessagePage page) {
         page.parrent = this;
         page.backToParent = false;
-        lastMessage = await botUser.EditMessageTextAsync(lastMessage!.MessageId, lastMessage!.Chat.Id, await page.text, page.BuildSelectedPage(), webPreview: page.webPreview);
+        lastMessage = await botUser.EditMessageTextAsync(
+            lastMessage!.MessageId, 
+            lastMessage!.Chat.Id,
+            await page.text, 
+            await page.BuildSelectedPageAsync(), 
+            webPreview: page.webPreview
+        );
         page.lastMessage = lastMessage;
+        return lastMessage;
     }
 
 
 
 
 
-    public async Task SendPageAsync() {
-        lastMessage = await botUser.SendTextMessageAsync(await text, BuildSelectedPage(), webPreview: webPreview);
+    public async Task<Message> SendPageAsync() {
+        lastMessage = await botUser.SendTextMessageAsync(await text, await BuildSelectedPageAsync(), webPreview: webPreview);
+        return lastMessage;
+    }
+
+
+
+
+    public async Task<Message> SendDocumentAsync(InputFile file) {
+        lastMessage = await botUser.SendDocumentAsync(file, await text, await BuildSelectedPageAsync());
+        return lastMessage;
+    }
+
+
+    public async Task<Message> SendDocumentAsync(byte[] file) {
+        lastMessage = await botUser.SendDocumentAsync(file, await text, await BuildSelectedPageAsync());
+        return lastMessage;
+    }
+
+
+    public async Task<Message> SendDocumentAsync(string fileId) {
+        lastMessage = await botUser.SendDocumentAsync(fileId, await text, await BuildSelectedPageAsync());
+        return lastMessage;
     }
 
 
 
 
 
-    public async Task UpdatePageAsync(int messageId, long chatId) {
-        lastMessage = await botUser.EditMessageTextAsync(messageId, chatId, await text, BuildSelectedPage(), webPreview: webPreview);
+    public async Task<Message> SendPhotoAsync(InputFile image) {    
+        lastMessage = await botUser.SendPhotoAsync(image, await text, await BuildSelectedPageAsync());
+        return lastMessage;
+    }
+
+
+    public async Task<Message> SendPhotoAsync(byte[] image) {
+        lastMessage = await botUser.SendPhotoAsync(image, await text, await BuildSelectedPageAsync());
+        return lastMessage;
+    }
+
+
+    public async Task<Message> SendPhotoAsync(string imageId) {
+        lastMessage = await botUser.SendPhotoAsync(imageId, await text, await BuildSelectedPageAsync());
+        return lastMessage;
+    }
+
+
+
+    public async Task<Message> UpdatePageAsync(int messageId, long chatId) {
+        lastMessage = await botUser.EditMessageTextAsync(messageId, chatId, await text, await BuildSelectedPageAsync(), webPreview: webPreview);
+        return lastMessage;
     }
 
 
@@ -222,8 +276,8 @@ public abstract class MessagePage : IDisposable {
 
 
 
-    private InlineKeyboardMarkup? BuildSelectedPage() {
-        var buttonsPages = RequestPageComponents();
+    private async Task<InlineKeyboardMarkup?> BuildSelectedPageAsync() {
+        var buttonsPages = await RequestPageComponentsAsync();
         if (buttonsPages is null && (!backToParent || parrent is null)) {
             return null;
         }
@@ -242,14 +296,14 @@ public abstract class MessagePage : IDisposable {
             });
         }
 
-        return new InlineKeyboardMarkup(BuildButtonsPage(buttonsPage));
+        return new InlineKeyboardMarkup(await BuildButtonsPageAsync(buttonsPage));
     }
 
 
 
 
 
-    private List<List<InlineKeyboardButton>> BuildButtonsPage(ButtonsPage buttonsPage) {
+    private async Task<List<List<InlineKeyboardButton>>> BuildButtonsPageAsync(ButtonsPage buttonsPage) {
         List<List<InlineKeyboardButton>> menu = new();
 
         foreach (var row in buttonsPage.page) {
@@ -260,7 +314,7 @@ public abstract class MessagePage : IDisposable {
                     menu.Add(rowInline);
                     rowInline = new();
                 } else {
-                    var buildList = button.Build();
+                    var buildList = await button.BuildAsync();
 
                     int count = 0;
                     foreach (var build in buildList) {

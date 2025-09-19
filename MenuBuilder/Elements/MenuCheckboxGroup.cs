@@ -5,13 +5,13 @@ namespace Telegram.Bot.UI.MenuBuilder.Elements;
 
 
 public class MenuCheckboxGroup : MenuElement {
-    public required IEnumerable<MenuSelector> buttons { get; init; }
+    public IEnumerable<MenuSelector> buttons { get; set; } = [];
     public string temp { get; set; } = "{{ if selected }}✅{{ end }} {{ title }}";
     public List<int> selected { get; private set; } = [];
     public IEnumerable<string> selectedId => selectButton.Select(x => x.id);
     public List<MenuSelector> selectButton => buttons.Where((x, i) => selected.Contains(i)).ToList();
     public List<string> callbackIdList = new();
-    public delegate void UpdateHandler(MenuSelector selectButton, bool isSelect);
+    public delegate Task UpdateHandler(MenuSelector selectButton, bool isSelect);
     public event UpdateHandler? onUpdate;
 
 
@@ -22,27 +22,31 @@ public class MenuCheckboxGroup : MenuElement {
 
 
 
-    public void Select(string id) {
+    public async Task SelectAsync(string id) {
         if (ButtonFromId(id) is not (MenuSelector button, int index)) {
             return;
         }
 
         if (!selected.Contains(index)) {
             selected.Add(index);
-            onUpdate?.Invoke(button, true);
+            if (onUpdate is not null) {
+                await onUpdate.Invoke(button, true);
+            }
         }
     }
 
 
 
-    public void Unselect(string id) {
+    public async Task UnselectAsync(string id) {
         if (ButtonFromId(id) is not (MenuSelector button, int index)) {
             return;
         }
 
         if (selected.Contains(index)) {
             selected.RemoveAt(index);
-            onUpdate?.Invoke(button, false);
+            if (onUpdate is not null) {
+                await onUpdate.Invoke(button, false);
+            }
         }
     }
 
@@ -69,7 +73,7 @@ public class MenuCheckboxGroup : MenuElement {
 
 
 
-    public override List<InlineKeyboardButton> Build() {
+    public override async Task<List<InlineKeyboardButton>> BuildAsync() {
         if (hide) {
             return new();
         }
@@ -89,13 +93,15 @@ public class MenuCheckboxGroup : MenuElement {
                     selected.Add(index);
                 }
 
-                onUpdate?.Invoke(selectButton[index], selected.Contains(index));
+                if (onUpdate is not null) {
+                    await onUpdate.Invoke(selectButton[index], selected.Contains(index));
+                }
                 await parrent.UpdatePageAsync(messageId, chatId);
             });
 
             callbackIdList.Add(callbackId);
 
-            var models = parrent.InheritedRequestModel();
+            var models = await parrent.InheritedRequestModelAsync();
             models.Add(new {
                 selected = selected.Contains(index),
                 title = TemplateEngine.Render(button.title, models, botUser.localization)

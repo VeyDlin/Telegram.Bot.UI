@@ -5,13 +5,13 @@ namespace Telegram.Bot.UI.MenuBuilder.Elements;
 
 
 public class MenuSwitch : MenuElement {
-    public required List<MenuSelector> buttons { get; init; }
+    public List<MenuSelector> buttons { get; set; } = [];
     public string temp { get; set; } = "{{ title }}";
     public int selected { get; set; } = 0;
     public string selectedId { get => buttons[selected].id!; }
     public MenuSelector selectButton { get => buttons[selected]; }
     private string? callbackId = null;
-    public delegate void UpdateHandler(MenuSelector selectButton);
+    public delegate Task UpdateHandler(MenuSelector selectButton);
     public event UpdateHandler? onUpdate;
 
 
@@ -22,18 +22,20 @@ public class MenuSwitch : MenuElement {
 
 
 
-    public void Select(string id) {
+    public async Task SelectAsync(string id) {
         var select = buttons.Select((button, index) => (button, index)).Where(x => x.button.id == id);
 
         if (select.Any() && select.First().index != selected) {
             selected = select.First().index;
-            onUpdate?.Invoke(selectButton);
+            if (onUpdate is not null) {
+                await onUpdate.Invoke(selectButton);
+            }
         }
     }
 
 
 
-    public override List<InlineKeyboardButton> Build() {
+    public override async Task<List<InlineKeyboardButton>> BuildAsync() {
         if (hide) {
             return new();
         }
@@ -48,14 +50,16 @@ public class MenuSwitch : MenuElement {
             selected++;
             selected = selected >= buttons.Count() ? 0 : selected;
 
-            onUpdate?.Invoke(selectButton);
+            if (onUpdate is not null) {
+                await onUpdate.Invoke(selectButton);
+            }
             await parrent.UpdatePageAsync(messageId, chatId);
         });
 
 
         var button = buttons[selected];
 
-        var models = parrent.InheritedRequestModel();
+        var models = await parrent.InheritedRequestModelAsync();
         models.Add(new {
             selected = selected,
             title = TemplateEngine.Render(button.title, models, botUser.localization)

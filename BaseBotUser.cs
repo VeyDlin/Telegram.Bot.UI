@@ -1,4 +1,6 @@
 ﻿using Localization;
+using System.Data.Common;
+using System.IO;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.Payments;
@@ -8,7 +10,8 @@ using Telegram.Bot.UI.BotWorker;
 namespace Telegram.Bot.UI;
 
 
-public abstract class BaseBotUser {
+public abstract class BaseBotUser : IDisposable {
+    private bool disposed = false;
     public long chatId { get; private set; }
     public IBotWorker worker { get; private set; }
     public ITelegramBotClient client { get; private set; }
@@ -30,6 +33,25 @@ public abstract class BaseBotUser {
     }
 
 
+    public void Dispose() {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+
+    protected virtual void Dispose(bool disposing) {
+        if (!disposed) {
+            if (disposing) {
+                DisposeResources();
+            }
+            disposed = true;
+        }
+    }
+
+    ~BaseBotUser() {
+        Dispose(false);
+    }
+
 
 
 
@@ -40,8 +62,15 @@ public abstract class BaseBotUser {
 
 
 
+    public virtual Task CreateAsync(Message? message) => Task.CompletedTask;
 
-    public virtual void Begin() { }
+    public virtual void Begin(Message? message) { }
+    public virtual Task BeginAsync(Message? message) => Task.CompletedTask;
+
+    public virtual void End() { }
+    public virtual Task EndAsync() => Task.CompletedTask;
+
+    public virtual void DisposeResources() { }
 
     public virtual Task HandleMessageAsync(string text, Message message) => Task.CompletedTask;
 
@@ -57,7 +86,9 @@ public abstract class BaseBotUser {
 
     public virtual Task HandleAcceptLicense(Message message) => Task.CompletedTask;
 
-    public virtual Task HandleSuccessPayment(SuccessfulPayment payment) => Task.CompletedTask;
+    public virtual Task HandleSuccessPaymentAsync(SuccessfulPayment payment) => Task.CompletedTask;
+
+    public virtual Task<string?> HandlePreCheckoutQueryAsync(PreCheckoutQuery preCheckoutQuery) => Task.FromResult<string?>("error");
 
     public virtual Task<string?> HandleStoppingProcess(Message message) => Task.FromResult<string?>(null);
 
@@ -65,7 +96,7 @@ public abstract class BaseBotUser {
 
 
 
-    public bool HandleCallbackAsync(string callbackQueryId, string callbackId, int messageId, long chatId) {
+    public Task<bool> HandleCallbackAsync(string callbackQueryId, string callbackId, int messageId, long chatId) {
         return callbackFactory.InvokeAsync(callbackQueryId, callbackId, messageId, chatId);
     }
 
@@ -136,7 +167,7 @@ public abstract class BaseBotUser {
     }
 
 
-    public Task<Message> SendDocumentAsync(string text, InputFile file, ReplyMarkup? markup = null, ParseMode? mode = null) {
+    public Task<Message> SendDocumentAsync(InputFile file, string? text = null, ReplyMarkup? markup = null, ParseMode? mode = null) {
         return client.SendDocument(
             chatId: chatId,
             document: file,
@@ -149,24 +180,24 @@ public abstract class BaseBotUser {
 
 
 
-    public Task<Message> SendDocumentAsync(string text, byte[] image, ReplyMarkup? markup = null, ParseMode? mode = null) {
-        return SendDocumentAsync(text, InputFile.FromStream(new MemoryStream(image)), markup, mode);
+    public Task<Message> SendDocumentAsync(byte[] file, string? text = null, ReplyMarkup? markup = null, ParseMode? mode = null) {
+        return SendDocumentAsync(InputFile.FromStream(new MemoryStream(file)), text, markup, mode);
     }
 
 
 
-    public Task<Message> SendDocumentAsync(string text, string imageId, ReplyMarkup? markup = null, ParseMode? mode = null) {
-        return SendDocumentAsync(text, InputFile.FromString(imageId), markup, mode);
+    public Task<Message> SendDocumentAsync(string fileId, string? text = null, ReplyMarkup? markup = null, ParseMode? mode = null) {
+        return SendDocumentAsync(InputFile.FromString(fileId), text, markup, mode);
     }
 
 
 
 
 
-    public Task<Message> SendPhotoAsync(InputFile file, string? text = null, ReplyMarkup? markup = null, ParseMode? mode = null) {
+    public Task<Message> SendPhotoAsync(InputFile image, string? text = null, ReplyMarkup? markup = null, ParseMode? mode = null) {
         return client.SendPhoto(
             chatId: chatId,
-            photo: file,
+            photo: image,
             caption: text,
             parseMode: mode ?? parseMode,
             cancellationToken: cancellationToken,

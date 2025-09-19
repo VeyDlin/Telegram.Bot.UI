@@ -57,7 +57,7 @@ public class BotWorkerWebHookServer<T> : BotWorkerWebHook<T> where T : BaseBotUs
                 context.Response.StatusCode = (int)HttpStatusCode.OK;
             }
         } catch (Exception ex) {
-            await ErrorHandlerAsync(botClient!, ex, cancellationTokenSource.Token);
+            await ErrorHandlerAsync(ex, cancellationTokenSource.Token);
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         } finally {
             context.Response.Close();

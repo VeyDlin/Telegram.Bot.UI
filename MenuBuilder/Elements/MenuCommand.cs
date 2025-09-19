@@ -1,4 +1,5 @@
 ﻿using Telegram.Bot.Types.ReplyMarkups;
+using static Telegram.Bot.UI.CallbackFactory;
 
 namespace Telegram.Bot.UI.MenuBuilder.Elements;
 
@@ -6,8 +7,8 @@ namespace Telegram.Bot.UI.MenuBuilder.Elements;
 public class MenuCommand : MenuElement {
     public required string title { get; set; }
     public string temp { get; set; } = "{{ title }}";
-    public delegate void ClickHandler(CallbackData callback);
-    public event CallbackFactory.CallbackHandler? onClick;
+    public delegate Task ClickHandler(CallbackHandler callback);
+    public event CallbackHandler? onClick;
     private string? callbackId = null;
 
 
@@ -18,7 +19,7 @@ public class MenuCommand : MenuElement {
 
 
 
-    public override List<InlineKeyboardButton> Build() {
+    public override async Task<List<InlineKeyboardButton>> BuildAsync() {
         if (hide) {
             return new();
         }
@@ -27,7 +28,7 @@ public class MenuCommand : MenuElement {
 
         callbackId = botUser.callbackFactory.Subscribe(botUser.chatId, onClick);
 
-        var models = parrent.InheritedRequestModel();
+        var models = await parrent.InheritedRequestModelAsync();
         models.Add(new {
             title = TemplateEngine.Render(title, models, botUser.localization)
         });

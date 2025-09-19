@@ -10,12 +10,12 @@ public class MenuLink : MenuElement {
 
 
 
-    public override List<InlineKeyboardButton> Build() {
+    public override async Task<List<InlineKeyboardButton>> BuildAsync() {
         if (hide) {
             return new();
         }
 
-        var models = parrent.InheritedRequestModel();
+        var models = await parrent.InheritedRequestModelAsync();
         models.Add(new {
             title = TemplateEngine.Render(title, models, botUser.localization),
             url = url

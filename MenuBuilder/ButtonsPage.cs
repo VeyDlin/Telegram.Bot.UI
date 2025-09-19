@@ -10,4 +10,9 @@ public class ButtonsPage {
         var pages = new List<ButtonsPage>();
         return pages.Concat(pagePram.Select(x => new ButtonsPage() { page = x })).ToList();
     }
+
+
+    public static Task<List<ButtonsPage>?> PageTask(params IEnumerable<IEnumerable<MenuElement>>[] pagePram) {
+        return Task.FromResult<List<ButtonsPage>?>(Page(pagePram));
+    }
 }

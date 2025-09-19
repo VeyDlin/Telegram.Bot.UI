@@ -1,10 +1,12 @@
 ﻿using Localization;
+using Microsoft.AspNetCore.SignalR.Protocol;
 using SafeStop;
-using System.Collections.Concurrent;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.Payments;
 using Telegram.Bot.UI.BotWorker;
 using Telegram.Bot.UI.Loader;
+using Telegram.Bot.UI.Utils;
 
 namespace Telegram.Bot.UI;
 
@@ -12,11 +14,17 @@ namespace Telegram.Bot.UI;
 public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
     public delegate T UserFactoryDelegate(IBotWorker worker, long chatId, ITelegramBotClient client, CancellationToken token);
 
+    public abstract ITelegramBotClient client { get; }
+
     protected UserFactoryDelegate userFactory;
-    protected ConcurrentDictionary<long, T> usersCache = new();
+
     protected SafeStopManager safeStop = new();
     public bool isSafeStopSet => safeStop.isStopSet;
 
+    private readonly Dictionary<long, TimeCache<T>> usersCache = new();
+    private readonly SemaphoreSlim cacheLock = new(1, 1);
+
+    public TimeSpan clearCacheTime { get; private set; } = TimeSpan.FromDays(1);
     public DateTime startTime { get; private set; } = DateTime.UtcNow;
     public PageResourceLoader pageResourceLoader { get; protected set; } = new();
     public LocalizationPack? localizationPack { get; set; } = null;
@@ -39,12 +47,10 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
 
 
 
-
     public async Task StartAsync() {
         startTime = DateTime.UtcNow;
         await StartHandleAsync();
     }
-
 
 
 
@@ -65,30 +71,26 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
 
 
 
-
     public Task<DisposeAction> CriticalAsync() => safeStop.CriticalAsync();
 
 
 
 
-
-    private async Task HandleUpdateCallbackQueryAsync(ITelegramBotClient botClient, CallbackQuery callbackQuery, CancellationToken cancellationToken) {
-        if (callbackQuery.Message is not { } message) {
-            return;
+    private async Task<T?> HandleUpdateCallbackQueryAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken) {
+        if (
+            callbackQuery.Message is not { } message ||
+            callbackQuery.Data is not string clickedNavigation ||
+            (skipMessagesBeforeStart && message.Date < startTime.ToUniversalTime())
+        ) {
+            await client.AnswerCallbackQuery(callbackQuery.Id);
+            return null;
         }
 
-        if (callbackQuery.Data is not string clickedNavigation) {
-            return;
-        }
-
-        if (skipMessagesBeforeStart && message.Date < startTime.ToUniversalTime()) {
-            return;
-        }
-
-        var user = GetOrCreateChatUser(callbackQuery.From.Id, botClient, cancellationToken);
+        var user = await GetOrCreateChatUserAsync(callbackQuery.From.Id, message, cancellationToken);
 
         if (!await user.HandlePermissiveAsync(message)) {
-            return;
+            await client.AnswerCallbackQuery(callbackQuery.Id);
+            return user;
         }
 
         if (safeStop.isStopSet) {
@@ -96,12 +98,13 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
             if (stopMessage is not null) {
                 await user.ShowAlertAsync(stopMessage, callbackQuery.Id);
             }
-            return;
+            await client.AnswerCallbackQuery(callbackQuery.Id);
+            return user;
         }
 
         try {
-            user.HandleCallbackAsync(callbackQuery.Id, clickedNavigation, message.MessageId, message.Chat.Id);
-            await botClient.AnswerCallbackQuery(callbackQuery.Id);
+            await user.HandleCallbackAsync(callbackQuery.Id, clickedNavigation, message.MessageId, message.Chat.Id);
+            await client.AnswerCallbackQuery(callbackQuery.Id);
         } catch (Exception ex) {
             try {
                 await user.HandleErrorAsync(ex);
@@ -109,28 +112,38 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
                 Console.WriteLine(ex2.ToString());
             }
         }
+
+        return user;
     }
 
 
 
 
-
-    private async Task HandleUpdateMessageAsync(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken) {
-
-        if (message.Type is MessageType.SuccessfulPayment) {
-            await HandleSuccessfulPaymentAsync(botClient, message, cancellationToken);
-            return;
+    private async Task<T?> HandleSuccessfulPaymentAsync(Message message, CancellationToken cancellationToken) {
+        if (message.SuccessfulPayment is not { } payment) {
+            return null;
         }
 
+        var user = await GetOrCreateChatUserAsync(message.Chat.Id, message, cancellationToken);
+        await user.HandleSuccessPaymentAsync(payment);
+        return user;
+    }
+
+
+
+
+    private async Task<T?> HandleUpdateMessageAsync(Message message, CancellationToken cancellationToken) {
+        if (message.Type is MessageType.SuccessfulPayment) {
+            return await HandleSuccessfulPaymentAsync(message, cancellationToken);
+        }
 
         if (skipMessagesBeforeStart && message.Date < startTime.ToUniversalTime()) {
-            return;
+            return null;
         }
 
-        var user = GetOrCreateChatUser(message.Chat.Id, botClient, cancellationToken);
-
+        var user = await GetOrCreateChatUserAsync(message.Chat.Id, message, cancellationToken);
         if (!await user.HandlePermissiveAsync(message)) {
-            return;
+            return user;
         }
 
         if (safeStop.isStopSet) {
@@ -138,28 +151,28 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
             if (stopMessage is not null) {
                 await user.SendTextMessageAsync(stopMessage);
             }
-            return;
+            return user;
         }
 
         if (!user.acceptLicense) {
             await user.HandleAcceptLicense(message);
-            return;
+            return user;
         }
 
         if (message.Photo is PhotoSize[] photo) {
             await user.HandlePhotoAsync(photo, message);
-            return;
+            return user;
         }
 
         if (message.Text is not { } messageText) {
             await user.HandleOtherMessageAsync(message);
-            return;
+            return user;
         }
 
         messageText = messageText.Trim();
 
         if (messageText == "") {
-            return;
+            return user;
         }
 
         if (user.enableCommands && messageText.StartsWith("/")) {
@@ -171,63 +184,59 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
         } else {
             await user.HandleMessageAsync(messageText, message);
         }
+
+        return user;
     }
 
 
 
 
-
-    private async Task HandleSuccessfulPaymentAsync(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken) {
-        if (message.SuccessfulPayment is not { } payment) {
-            return;
-        }
-
-        var user = GetOrCreateChatUser(message.Chat.Id, botClient, cancellationToken);
-
-        // TODO: do need a skipMessagesBeforeStart? HandlePermissiveAsync? HandleAcceptLicense?
-
-        await user.HandleSuccessPayment(payment);
+    private async Task<T?> HandlePreCheckoutQueryAsync(PreCheckoutQuery query, CancellationToken cancellationToken) {
+        var user = await GetOrCreateChatUserAsync(query.From.Id, null, cancellationToken);
+        var error = await user.HandlePreCheckoutQueryAsync(query);
+        await client.AnswerPreCheckoutQuery(query.Id, errorMessage: error, cancellationToken);
+        return user;
     }
 
 
 
 
-
-    protected async Task UpdateHandlerAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken) {
-        long? chatId = null;
-
+    protected async Task UpdateHandlerAsync(Update update, CancellationToken cancellationToken) {
+        T? user = null;
         try {
-            chatId = update.Message?.Chat.Id ?? update.CallbackQuery?.Message?.Chat.Id;
-            if (chatId is null) {
-                return;
-            }
+            try {
+                switch (update.Type) {
+                    case UpdateType.Message when update.Message is { } message:
+                        user = await HandleUpdateMessageAsync(message, cancellationToken);
+                    break;
 
-            switch (update.Type) {
-                case UpdateType.Message when update.Message is { } message:
-                    await HandleUpdateMessageAsync(botClient, message, cancellationToken);
-                break;
+                    case UpdateType.CallbackQuery when update.CallbackQuery is { } callbackQuery:
+                        user = await HandleUpdateCallbackQueryAsync(callbackQuery, cancellationToken);
+                    break;
 
-                case UpdateType.CallbackQuery when update.CallbackQuery is { } callbackQuery:
-                    await HandleUpdateCallbackQueryAsync(botClient, callbackQuery, cancellationToken);
-                break;
-            }
-        } catch (Exception ex) {
-            if (chatId is not null) {
-                try {
-                    var user = GetOrCreateChatUser((long)chatId, botClient, cancellationToken);
-                    await user.HandleErrorAsync(ex);
-                } catch (Exception ex2) {
-                    Console.WriteLine(ex2.ToString());
+                    case UpdateType.PreCheckoutQuery when update.PreCheckoutQuery is { } preCheckoutQuery:
+                        user = await HandlePreCheckoutQueryAsync(preCheckoutQuery, cancellationToken);
+                    break;
                 }
+            } catch (Exception ex) {          
+                if (user is not null) {       
+                    await user.HandleErrorAsync(ex);
+                }
+            } finally {
+                if (user is not null) {
+                    user.End();
+                    await user.EndAsync();
+                }       
             }
+        } catch (Exception ex2) {
+            Console.WriteLine(ex2.ToString());
         }
     }
 
 
 
 
-
-    protected Task ErrorHandlerAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken) {
+    protected Task ErrorHandlerAsync(Exception exception, CancellationToken cancellationToken) {
         // TODO: add Handle
         return Task.CompletedTask;
     }
@@ -235,12 +244,50 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
 
 
 
+    public async Task ClearCacheAsync() {
+        await cacheLock.WaitAsync();
+        try {
+            var users = usersCache.Where(c => c.Value.time < DateTime.UtcNow - clearCacheTime);
+            foreach (var user in users) {
+                user.Value.value.Dispose();
+                usersCache.Remove(user.Key);
+            }
 
-    private BaseBotUser GetOrCreateChatUser(long chatId, ITelegramBotClient cient, CancellationToken cancellationToken) {
-        return usersCache.GetOrAdd(chatId, (key) => {
-            var user = userFactory(this, chatId, cient, cancellationToken);
-            user.Begin();
+            foreach (var user in usersCache) {
+                user.Value.value.callbackFactory.ClearCache();
+            }     
+        } finally {
+            cacheLock.Release();
+        }
+    }
+
+
+
+
+    public async Task<T> GetOrCreateChatUserAsync(long chatId, Message? message = null, CancellationToken cancellationToken = default) {
+        await cacheLock.WaitAsync(cancellationToken);
+        try {
+            if (usersCache.TryGetValue(chatId, out var existingUser)) {
+                existingUser.Update();
+
+                existingUser.value.Begin(message);
+                await existingUser.value.BeginAsync(message);
+
+                return existingUser.value;
+            }
+
+            var user = userFactory(this, chatId, client, cancellationToken);
+
+            await user.CreateAsync(message);
+
+            user.Begin(message);
+            await user.BeginAsync(message);
+
+            usersCache[chatId] = new TimeCache<T>(user);
             return user;
-        });
+        } finally {
+            cacheLock.Release();
+            await ClearCacheAsync();
+        }
     }
 }

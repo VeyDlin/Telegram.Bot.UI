@@ -33,7 +33,7 @@ public class MenuRadioModalPage : MessagePage {
 
 
 
-    public void Select(string id) => buttons.Select(id);
+    public Task SelectAsync(string id) => buttons.SelectAsync(id);
 
 
 
@@ -44,15 +44,22 @@ public class MenuRadioModalPage : MessagePage {
 
 
     public override string? RequestMessageResource() => selectDetails?.messageResource ?? parrent?.RequestMessageResource();
-    public override (string resource, WallpaperLoader loader)? RequestWallpaper() => selectDetails?.wallpaper;
-    public override object? RequestModel() => selectDetails?.model ?? parrent?.RequestModel();
+    public override Task<(string resource, WallpaperLoader loader)?> RequestWallpaperAsync() => Task.FromResult(selectDetails?.wallpaper);
+    public override async Task<object?> RequestModelAsync() {
+        if (selectDetails?.model is not null) {
+            return selectDetails?.model;
+        }
+        if (parrent is not null) {
+            return await parrent.RequestModelAsync();
+        }
+        return null;
+    }
 
 
-
-    public override List<ButtonsPage> RequestPageComponents() {
+    public override Task<List<ButtonsPage>?> RequestPageComponentsAsync() {
         webPreview = selectDetails?.webPreview ?? parrent?.webPreview ?? true;
 
-        return ButtonsPage.Page([
+        return ButtonsPage.PageTask([
             [buttons]
         ]);
     }
