@@ -375,6 +375,9 @@ public abstract class MessagePage : IDisposable {
     protected MenuLink MenuLink(string url, string title) =>
         new() { url = url, botUser = botUser, title = title, parrent = this };
 
+    protected MenuWebApp MenuWebApp(string url, string title) =>
+        new() { url = url, botUser = botUser, title = title, parrent = this };
+
     protected MenuSplit MenuSplit() =>
         new() { botUser = botUser, parrent = this };
 
