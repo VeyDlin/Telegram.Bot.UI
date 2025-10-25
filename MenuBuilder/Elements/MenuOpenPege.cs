@@ -27,12 +27,12 @@ public class MenuOpenPege : MenuElement {
 
         callbackId = botUser.callbackFactory.Subscribe(botUser.chatId, async (callbackQueryId, messageId, chatId) => {
             if (changeParrent) {
-                page.parrent = parrent;
+                page.parent = parent;
             }
             await page.UpdatePageAsync(messageId, chatId);
         });
 
-        var models = await parrent.InheritedRequestModelAsync();
+        var models = await parent.InheritedRequestModelAsync();
         models.Add(new {
             title = TemplateEngine.Render(title ?? page.title ?? "...", models, botUser.localization),
             changeParrent = changeParrent

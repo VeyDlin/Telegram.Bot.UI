@@ -4,7 +4,7 @@ namespace Telegram.Bot.UI.MenuBuilder;
 
 
 public abstract class MenuElement : IDisposable {
-    public virtual required MessagePage parrent { get; set; }
+    public virtual required MessagePage parent { get; set; }
     public virtual required BaseBotUser botUser { get; set; }
     public virtual bool hide { get; set; } = false;
     public virtual int columns { get; set; } = 3;

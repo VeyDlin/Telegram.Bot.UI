@@ -15,7 +15,7 @@ public class MenuLink : MenuElement {
             return new();
         }
 
-        var models = await parrent.InheritedRequestModelAsync();
+        var models = await parent.InheritedRequestModelAsync();
         models.Add(new {
             title = TemplateEngine.Render(title, models, botUser.localization),
             url = url

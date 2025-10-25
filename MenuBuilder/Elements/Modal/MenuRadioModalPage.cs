@@ -8,15 +8,15 @@ public class MenuRadioModalPage : MessagePage {
     private MenuRadio buttons;
     public int columns { get => buttons.columns; set => buttons.columns = value; }
     public int selected => buttons.selected;
-    public string selectedId => buttons.selectedId;
-    public MenuSelector selectButton => buttons.selectButton;
+    public string? selectedId => buttons.selectedId;
+    public MenuSelector? selectButton => buttons.selectButton;
     public string temp { get => buttons.temp; set => buttons.temp = value; }
 
     public IEnumerable<MenuModalDetails>? details { get; private set; }
 
-    public override string title => buttons.selectButton.title;
-    public override string? pageResource => selectDetails?.pageResource ?? parrent?.pageResource;
-    private MenuModalDetails? selectDetails => details?.Where(x => x.id == buttons.selectButton.id).FirstOrNull();
+    public override string title => buttons.selectButton?.title ?? "";
+    public override string? pageResource => selectDetails?.pageResource ?? parent?.pageResource;
+    private MenuModalDetails? selectDetails => buttons.selectButton is not null ? details?.Where(x => x.id == buttons.selectButton.id).FirstOrNull() : null;
 
     public event MenuRadio.SelectHandler? onSelect {
         add => buttons.onSelect += value;
@@ -43,21 +43,21 @@ public class MenuRadioModalPage : MessagePage {
 
 
 
-    public override string? RequestMessageResource() => selectDetails?.messageResource ?? parrent?.RequestMessageResource();
+    public override string? RequestMessageResource() => selectDetails?.messageResource ?? parent?.RequestMessageResource();
     public override Task<(string resource, WallpaperLoader loader)?> RequestWallpaperAsync() => Task.FromResult(selectDetails?.wallpaper);
     public override async Task<object?> RequestModelAsync() {
         if (selectDetails?.model is not null) {
             return selectDetails?.model;
         }
-        if (parrent is not null) {
-            return await parrent.RequestModelAsync();
+        if (parent is not null) {
+            return await parent.RequestModelAsync();
         }
         return null;
     }
 
 
     public override Task<List<ButtonsPage>?> RequestPageComponentsAsync() {
-        webPreview = selectDetails?.webPreview ?? parrent?.webPreview ?? true;
+        webPreview = selectDetails?.webPreview ?? parent?.webPreview ?? true;
 
         return ButtonsPage.PageTask([
             [buttons]

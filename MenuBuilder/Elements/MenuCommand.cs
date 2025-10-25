@@ -28,7 +28,7 @@ public class MenuCommand : MenuElement {
 
         callbackId = botUser.callbackFactory.Subscribe(botUser.chatId, onClick);
 
-        var models = await parrent.InheritedRequestModelAsync();
+        var models = await parent.InheritedRequestModelAsync();
         models.Add(new {
             title = TemplateEngine.Render(title, models, botUser.localization)
         });

@@ -53,12 +53,12 @@ public class MenuCheckboxModal : MenuElement {
         botUser.callbackFactory.Unsubscribe(callbackId);
 
         callbackId = botUser.callbackFactory.Subscribe(botUser.chatId, async (callbackQueryId, messageId, chatId) => {
-            modalPage.parrent = parrent;
+            modalPage.parent = parent;
             await modalPage.UpdatePageAsync(messageId, chatId);
         });
 
 
-        var models = await parrent.InheritedRequestModelAsync();
+        var models = await parent.InheritedRequestModelAsync();
         models.Add(new {
             title = TemplateEngine.Render(modalPage.title, models, botUser.localization)
         });

@@ -18,7 +18,7 @@ public abstract class MessagePage : IDisposable {
     public virtual string? backTitle { get; } = null;
     public virtual Task<string?> text => BuildTextTemplate();
     public int selectedPage { get; set; } = 0;
-    public MessagePage? parrent { get; set; }
+    public MessagePage? parent { get; set; }
     public bool backToParent { get; set; } = true;
     public BaseBotUser botUser { get; private set; }
     public bool webPreview { get; set; } = true;
@@ -111,7 +111,7 @@ public abstract class MessagePage : IDisposable {
                 model.Add(currentModel);
             }
 
-            currentPage = currentPage.parrent;
+            currentPage = currentPage.parent;
         }
 
         model.Reverse();
@@ -173,7 +173,7 @@ public abstract class MessagePage : IDisposable {
 
 
     public async Task<Message> OpenSubPageAsync(MessagePage page) {
-        page.parrent = this;
+        page.parent = this;
         page.backToParent = true;
         lastMessage = await botUser.EditMessageTextAsync(
             lastMessage!.MessageId, 
@@ -191,7 +191,7 @@ public abstract class MessagePage : IDisposable {
 
 
     public async Task<Message> OpenPageAsync(MessagePage page) {
-        page.parrent = this;
+        page.parent = this;
         page.backToParent = false;
         lastMessage = await botUser.EditMessageTextAsync(
             lastMessage!.MessageId, 
@@ -278,7 +278,7 @@ public abstract class MessagePage : IDisposable {
 
     private async Task<InlineKeyboardMarkup?> BuildSelectedPageAsync() {
         var buttonsPages = await RequestPageComponentsAsync();
-        if (buttonsPages is null && (!backToParent || parrent is null)) {
+        if (buttonsPages is null && (!backToParent || parent is null)) {
             return null;
         }
 
@@ -290,9 +290,9 @@ public abstract class MessagePage : IDisposable {
             page = new MenuElement[][] { }
         };
 
-        if (backToParent && parrent is not null) {
+        if (backToParent && parent is not null) {
             buttonsPage.page = buttonsPage.page.Concat(new MenuElement[][] {
-                [ MenuOpenPege(parrent, parrent.backTitle ?? $"<< {parrent.title ?? string.Empty}") ]
+                [ MenuOpenPege(parent, parent.backTitle ?? $"<< {parent.title ?? string.Empty}") ]
             });
         }
 
@@ -346,41 +346,41 @@ public abstract class MessagePage : IDisposable {
 
 
     protected MenuCheckbox MenuCheckbox(string title) =>
-        new() { title = title, botUser = botUser, parrent = this };
+        new() { title = title, botUser = botUser, parent = this };
 
     protected MenuCheckboxGroup MenuCheckboxGroup(IEnumerable<MenuSelector> buttons) =>
-        new() { buttons = buttons, botUser = botUser, parrent = this };
+        new() { buttons = buttons, botUser = botUser, parent = this };
 
     protected MenuCheckboxModal MenuCheckboxModal(IEnumerable<MenuSelector> buttons, string? title = null, IEnumerable<MenuModalDetails>? details = null) =>
-        new(buttons, details, botUser) { buttons = buttons, title = title, botUser = botUser, parrent = this };
+        new(buttons, details, botUser) { buttons = buttons, title = title, botUser = botUser, parent = this };
 
     protected MenuRadio MenuRadio(IEnumerable<MenuSelector> buttons) =>
-        new() { buttons = buttons.ToList(), botUser = botUser, parrent = this };
+        new() { buttons = buttons.ToList(), botUser = botUser, parent = this };
 
     protected MenuRadioModal MenuRadioModal(IEnumerable<MenuSelector> buttons, string? title = null, IEnumerable<MenuModalDetails>? details = null) =>
-        new(buttons, details, botUser) { buttons = buttons, title = title, botUser = botUser, parrent = this };
+        new(buttons, details, botUser) { buttons = buttons, title = title, botUser = botUser, parent = this };
 
     protected MenuSwitch MenuSwitch(IEnumerable<MenuSelector> buttons) =>
-        new() { buttons = buttons.ToList(), botUser = botUser, parrent = this };
+        new() { buttons = buttons.ToList(), botUser = botUser, parent = this };
 
     protected MenuCommand MenuCommand(string title) =>
-        new() { title = title, botUser = botUser, parrent = this };
+        new() { title = title, botUser = botUser, parent = this };
 
     protected MenuOpenPege MenuOpenPege(MessagePage page, string? title = null) =>
-        new() { page = page, title = title, botUser = botUser, parrent = this, changeParrent = false };
+        new() { page = page, title = title, botUser = botUser, parent = this, changeParrent = false };
 
     protected MenuOpenPege MenuOpenSubPege(MessagePage page, string? title = null) =>
-        new() { page = page, title = title, botUser = botUser, parrent = this, changeParrent = true };
+        new() { page = page, title = title, botUser = botUser, parent = this, changeParrent = true };
 
     protected MenuLink MenuLink(string url, string title) =>
-        new() { url = url, botUser = botUser, title = title, parrent = this };
+        new() { url = url, botUser = botUser, title = title, parent = this };
 
     protected MenuWebApp MenuWebApp(string url, string title) =>
-        new() { url = url, botUser = botUser, title = title, parrent = this };
+        new() { url = url, botUser = botUser, title = title, parent = this };
 
     protected MenuSplit MenuSplit() =>
-        new() { botUser = botUser, parrent = this };
+        new() { botUser = botUser, parent = this };
 
     protected MenuNavigatePanel MenuNavigatePanel() =>
-        new() { botUser = botUser, parrent = this };
+        new() { botUser = botUser, parent = this };
 }

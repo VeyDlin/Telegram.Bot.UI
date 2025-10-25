@@ -1,14 +1,11 @@
 ﻿using System.Collections.Concurrent;
-using System.Linq.Expressions;
-using Telegram.Bot.Types;
-using Telegram.Bot.UI.MenuBuilder;
 using Telegram.Bot.UI.Utils;
 
 namespace Telegram.Bot.UI;
 
 
 public class CallbackFactory {
-    private static ulong IdCount = 0;
+    private static long idCount = 0;
 
     public delegate Task CallbackHandler(string callbackQueryId, int messageId, long chatId);
 
@@ -73,7 +70,7 @@ public class CallbackFactory {
 
 
     public string GenerateId() {
-        return (IdCount++).ToString();
+        return Interlocked.Increment(ref idCount).ToString();
     }
 
 

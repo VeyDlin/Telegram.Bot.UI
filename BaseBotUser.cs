@@ -1,6 +1,6 @@
 ﻿using Localization;
-using System.Data.Common;
-using System.IO;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.Payments;
@@ -21,6 +21,7 @@ public abstract class BaseBotUser : IDisposable {
     public ParseMode parseMode { get; set; } = ParseMode.Markdown;
     public bool acceptLicense { get; set; } = true;
     public bool enableCommands { get; set; } = true;
+    public ILogger logger { get; set; } = NullLogger.Instance;
 
 
 
@@ -327,11 +328,12 @@ public abstract class BaseBotUser : IDisposable {
             }
 
             case ParseMode.MarkdownV2: {
+                text = text.Replace("\\", "\\\\");
                 char[] markdownV2SpecialChars = { '_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!' };
                 foreach (var specialChar in markdownV2SpecialChars) {
                     text = text.Replace(specialChar.ToString(), "\\" + specialChar);
                 }
-                return text.Replace("\\", "\\\\");
+                return text;
             }
 
             case ParseMode.Html: {

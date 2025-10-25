@@ -1,5 +1,6 @@
 ﻿using Localization;
-using Microsoft.AspNetCore.SignalR.Protocol;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using SafeStop;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -23,6 +24,7 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
 
     private readonly Dictionary<long, TimeCache<T>> usersCache = new();
     private readonly SemaphoreSlim cacheLock = new(1, 1);
+    private long requestCount = 0;
 
     public TimeSpan clearCacheTime { get; private set; } = TimeSpan.FromDays(1);
     public DateTime startTime { get; private set; } = DateTime.UtcNow;
@@ -33,6 +35,7 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
     public Func<Task>? onStopRequest { get; set; } = null;
     public bool skipMessagesBeforeStart { get; set; } = true;
     public string? resourcePath { set => pageResourceLoader = new(value); }
+    public ILogger logger { get; set; } = NullLogger.Instance;
 
 
     public BaseBotWorker(UserFactoryDelegate userFactory) {
@@ -48,14 +51,18 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
 
 
     public async Task StartAsync() {
+        logger.LogInformation("Starting bot worker");
         startTime = DateTime.UtcNow;
         await StartHandleAsync();
+        logger.LogInformation("Bot worker started successfully");
     }
 
 
 
 
     public async Task StopAsync() {
+        logger.LogInformation("Stopping bot worker");
+
         if (onStopRequest is not null) {
             await onStopRequest.Invoke();
         }
@@ -66,6 +73,8 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
         await safeStop.WaitStopAsync();
 
         cancellationTokenSource.Cancel();
+
+        logger.LogInformation("Bot worker stopped successfully");
     }
 
 
@@ -109,7 +118,7 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
             try {
                 await user.HandleErrorAsync(ex);
             } catch (Exception ex2) {
-                Console.WriteLine(ex2.ToString());
+                logger.LogError(ex2, "Error in user.HandleErrorAsync for user {UserId}", user.chatId);
             }
         }
 
@@ -226,10 +235,10 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
                 if (user is not null) {
                     user.End();
                     await user.EndAsync();
-                }       
+                }
             }
         } catch (Exception ex2) {
-            Console.WriteLine(ex2.ToString());
+            logger.LogCritical(ex2, "Critical error in UpdateHandlerAsync");
         }
     }
 
@@ -237,7 +246,7 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
 
 
     protected Task ErrorHandlerAsync(Exception exception, CancellationToken cancellationToken) {
-        // TODO: add Handle
+        logger.LogError(exception, "Unhandled error in bot worker");
         return Task.CompletedTask;
     }
 
@@ -247,7 +256,11 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
     public async Task ClearCacheAsync() {
         await cacheLock.WaitAsync();
         try {
-            var users = usersCache.Where(c => c.Value.time < DateTime.UtcNow - clearCacheTime);
+            var users = usersCache.Where(c => c.Value.time < DateTime.UtcNow - clearCacheTime).ToList();
+            if (users.Count > 0) {
+                logger.LogDebug("Clearing {Count} users from cache", users.Count);
+            }
+
             foreach (var user in users) {
                 user.Value.value.Dispose();
                 usersCache.Remove(user.Key);
@@ -255,7 +268,7 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
 
             foreach (var user in usersCache) {
                 user.Value.value.callbackFactory.ClearCache();
-            }     
+            }
         } finally {
             cacheLock.Release();
         }
@@ -276,6 +289,8 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
                 return existingUser.value;
             }
 
+            logger.LogInformation("Creating new user instance for chat {ChatId}", chatId);
+
             var user = userFactory(this, chatId, client, cancellationToken);
 
             await user.CreateAsync(message);
@@ -287,7 +302,10 @@ public abstract class BaseBotWorker<T> : IBotWorker where T : BaseBotUser {
             return user;
         } finally {
             cacheLock.Release();
-            await ClearCacheAsync();
+
+            if (Interlocked.Increment(ref requestCount) % 100 == 0) {
+                await ClearCacheAsync();
+            }
         }
     }
 }

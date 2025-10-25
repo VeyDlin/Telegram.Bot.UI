@@ -16,7 +16,7 @@ public class MenuCheckboxModalPage : MessagePage {
     public MenuModalDetails? lastSelectDetails { get; private set; }
 
     public override string title => string.Join(", ", buttons.selectButton.Select(x => x.title));
-    public override string? pageResource => lastSelectDetails?.pageResource ?? parrent?.pageResource;
+    public override string? pageResource => lastSelectDetails?.pageResource ?? parent?.pageResource;
     public List<MenuModalDetails> selectDetails => details?.Where(x => buttons.selectButton.Select(x => x.id).Contains(x.id)).ToList() ?? new();
 
     public event MenuCheckboxGroup.UpdateHandler? onUpdate;
@@ -48,14 +48,14 @@ public class MenuCheckboxModalPage : MessagePage {
 
 
 
-    public override string? RequestMessageResource() => lastSelectDetails?.messageResource ?? parrent?.RequestMessageResource();
+    public override string? RequestMessageResource() => lastSelectDetails?.messageResource ?? parent?.RequestMessageResource();
     public override Task<(string resource, WallpaperLoader loader)?> RequestWallpaperAsync() => Task.FromResult(lastSelectDetails?.wallpaper);
     public override async Task<object?> RequestModelAsync() {
         if (lastSelectDetails?.model is not null) {
             return lastSelectDetails?.model;
         }
-        if (parrent is not null) {
-            return await parrent.RequestModelAsync();
+        if (parent is not null) {
+            return await parent.RequestModelAsync();
         }
         return null;
     }
@@ -65,7 +65,7 @@ public class MenuCheckboxModalPage : MessagePage {
 
 
     public override Task<List<ButtonsPage>?> RequestPageComponentsAsync() {
-        webPreview = lastSelectDetails?.webPreview ?? parrent?.webPreview ?? true;
+        webPreview = lastSelectDetails?.webPreview ?? parent?.webPreview ?? true;
 
         return ButtonsPage.PageTask([
             [buttons]

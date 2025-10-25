@@ -13,6 +13,7 @@ public class MenuCheckboxGroup : MenuElement {
     public List<string> callbackIdList = new();
     public delegate Task UpdateHandler(MenuSelector selectButton, bool isSelect);
     public event UpdateHandler? onUpdate;
+    private readonly object selectedLock = new();
 
 
 
@@ -27,11 +28,14 @@ public class MenuCheckboxGroup : MenuElement {
             return;
         }
 
-        if (!selected.Contains(index)) {
-            selected.Add(index);
-            if (onUpdate is not null) {
-                await onUpdate.Invoke(button, true);
+        lock (selectedLock) {
+            if (!selected.Contains(index)) {
+                selected.Add(index);
             }
+        }
+
+        if (onUpdate is not null) {
+            await onUpdate.Invoke(button, true);
         }
     }
 
@@ -42,11 +46,14 @@ public class MenuCheckboxGroup : MenuElement {
             return;
         }
 
-        if (selected.Contains(index)) {
-            selected.RemoveAt(index);
-            if (onUpdate is not null) {
-                await onUpdate.Invoke(button, false);
+        lock (selectedLock) {
+            if (selected.Contains(index)) {
+                selected.Remove(index);
             }
+        }
+
+        if (onUpdate is not null) {
+            await onUpdate.Invoke(button, false);
         }
     }
 
@@ -86,22 +93,27 @@ public class MenuCheckboxGroup : MenuElement {
 
         foreach (var (button, index) in MenuSelector.WithIndex(buttons)) {
             var callbackId = botUser.callbackFactory.Subscribe(botUser.chatId, async (callbackQueryId, messageId, chatId) => {
+                bool isSelected;
 
-                if (selected.Contains(index)) {
-                    selected.RemoveAt(index);
-                } else {
-                    selected.Add(index);
+                lock (selectedLock) {
+                    if (selected.Contains(index)) {
+                        selected.Remove(index);
+                        isSelected = false;
+                    } else {
+                        selected.Add(index);
+                        isSelected = true;
+                    }
                 }
 
                 if (onUpdate is not null) {
-                    await onUpdate.Invoke(selectButton[index], selected.Contains(index));
+                    await onUpdate.Invoke(button, isSelected);
                 }
-                await parrent.UpdatePageAsync(messageId, chatId);
+                await parent.UpdatePageAsync(messageId, chatId);
             });
 
             callbackIdList.Add(callbackId);
 
-            var models = await parrent.InheritedRequestModelAsync();
+            var models = await parent.InheritedRequestModelAsync();
             models.Add(new {
                 selected = selected.Contains(index),
                 title = TemplateEngine.Render(button.title, models, botUser.localization)

@@ -4,23 +4,26 @@ Library for creating Telegram bot interfaces based on [Telegram.Bot](https://git
 
 Visit the repository with a demo project of a photo editor bot [Telegram.Bot.UI.Demo](https://github.com/VeyDlin/Telegram.Bot.UI.Demo)
 
+[![NuGet](https://img.shields.io/nuget/v/Telegram.Bot.UI.svg)](https://www.nuget.org/packages/Telegram.Bot.UI/)
+[![License](https://img.shields.io/github/license/VeyDlin/Telegram.Bot.UI)](LICENSE)
+
 ## ✨ Features
 
-- 🔄 Different bot operation modes:
+- Different bot operation modes:
   - Long Polling
   - WebHook via controller
   - Built-in WebHook server
-- 🖼️ Text templating system
-- 📦 Resource loader (texts, images, etc.)
-- 📄 Nested interface pages
-- ⌨️ Built-in command parser
-- 🛡️ User permissions management system (useful for bans)
-- ⚠️ Safe bot shutdown mechanism (waits for all critical operations to complete)
-- 🖌️ Page wallpaper support (via web preview)
-- 📝 Built-in license agreement acceptance mechanism
-- 🧰 Rich library of interactive menu components
+- Text templating system
+- Resource loader (texts, images, etc.)
+- Nested interface pages
+- Built-in command parser
+- User permissions management system (useful for bans)
+- Safe bot shutdown mechanism (waits for all critical operations to complete)
+- Page wallpaper support (via web preview)
+- Built-in license agreement acceptance mechanism
+- Rich library of interactive menu components
 
-## 🧰 Interface Components
+## Interface Components
 
 The library provides numerous interactive components:
 
@@ -102,14 +105,13 @@ public class MyBotUser : BaseBotUser
     }
 
     public override async Task HandleErrorAsync(Exception exception) {
-        // Log the error and send it in response
-        Console.WriteLine(exception.ToString());
+        logger.LogError(exception, "Error in bot user {ChatId}", chatId);
         await SendTextMessageAsync($"<pre>{EscapeText(exception.ToString(), ParseMode.Html)}</pre>", mode: ParseMode.Html);
     }
 }
 ```
 
-## 🔄 Bot Operation Modes
+## Bot Operation Modes
 
 ### Long Polling
 
@@ -190,6 +192,88 @@ var bot = new BotWorkerWebHookServer<MyBotUser>((worker, chatId, client, token) 
 
 await bot.StartAsync();
 ```
+
+## 📝 Logging Configuration
+
+The library supports Microsoft.Extensions.Logging for comprehensive logging throughout the bot lifecycle.
+
+### Basic Logging Setup
+
+```csharp
+using Microsoft.Extensions.Logging;
+
+var loggerFactory = LoggerFactory.Create(builder => {
+    builder
+        .SetMinimumLevel(LogLevel.Information)
+        .AddConsole();
+});
+
+var bot = new BotWorkerPulling<MyBotUser>((worker, chatId, client, token) => {
+    return new MyBotUser(worker, chatId, client, token);
+}) {
+    botToken = "TELEGRAM_BOT_TOKEN",
+    resourcePath = Path.Combine("Resources", "View"),
+    localizationPack = LocalizationPack.FromJson(new FileInfo(Path.Combine("Resources", "Lang", "Lang.json"))),
+    logger = loggerFactory.CreateLogger<BotWorkerPulling<MyBotUser>>()
+};
+
+await bot.StartAsync();
+```
+
+### Passing Logger to User Instance
+
+To enable logging in your user class, pass the logger in the constructor:
+
+```csharp
+var bot = new BotWorkerPulling<MyBotUser>((worker, chatId, client, token) => {
+    var user = new MyBotUser(worker, chatId, client, token);
+    user.logger = loggerFactory.CreateLogger<MyBotUser>();
+    return user;
+}) {
+    botToken = "TELEGRAM_BOT_TOKEN",
+    resourcePath = Path.Combine("Resources", "View"),
+    logger = loggerFactory.CreateLogger<BotWorkerPulling<MyBotUser>>()
+};
+```
+
+### Integration with ASP.NET Core
+
+When using WebHook mode with ASP.NET Core, you can use dependency injection:
+
+```csharp
+builder.Services.AddSingleton(serviceProvider => {
+    var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+
+    var bot = new BotWorkerWebHook<MyBotUser>((worker, chatId, client, token) => {
+        var user = new MyBotUser(worker, chatId, client, token);
+        user.logger = loggerFactory.CreateLogger<MyBotUser>();
+        return user;
+    }) {
+        botToken = "TELEGRAM_BOT_TOKEN",
+        botSecretToken = "WEBHOOK_SECRET_TOKEN",
+        botHostAddress = "https://mybot.com",
+        botRoute = "TelegramBot/webhook",
+        resourcePath = Path.Combine("Resources", "View"),
+        localizationPack = LocalizationPack.FromJson(new FileInfo(Path.Combine("Resources", "Lang", "Lang.json"))),
+        logger = loggerFactory.CreateLogger<BotWorkerWebHook<MyBotUser>>()
+    };
+
+    return bot;
+});
+```
+
+### Logged Events
+
+The library logs the following events:
+
+**BotWorker (BaseBotWorker):**
+- Bot startup and shutdown (Information level)
+- User cache operations (Debug level)
+- New user creation (Information level)
+- Errors during update handling (Error/Critical level)
+
+**BotUser (BaseBotUser):**
+- Custom error handling in `HandleErrorAsync` (your implementation)
 
 ## 📄 Creating Interface Pages
 
@@ -321,7 +405,7 @@ public class InformationView : MessagePage {
 }
 ```
 
-## 🔄 Localization
+## Localization
 
 Localization uses a simple JSON format:
 
