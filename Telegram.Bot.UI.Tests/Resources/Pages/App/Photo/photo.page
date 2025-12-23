@@ -1,0 +1,47 @@
+<view id="photo" web-preview="false" back-title="« Back">
+    <title>Photo</title>
+
+    <photo src="@/Media/sample.png"></photo>
+
+    <script>
+        var receivedPhoto = null;
+    </script>
+
+    <message md resource="text/caption-{{ Base.localization.code }}">
+    </message>
+
+    <components>
+        <!-- Media-to-media navigation -->
+        <open id="toDocument" title="📄 Open as Document" target="document"></open>
+
+        <!-- Actions -->
+        <row>
+            <command id="likeBtn" title="👍 Like" columns="2"></command>
+            <command id="shareBtn" title="🔗 Share" columns="2"></command>
+        </row>
+
+        <command id="infoBtn" title="ℹ️ Photo Info"></command>
+    </components>
+
+    <script>
+        onMounted(function() {
+            component('likeBtn').onClick = function() {
+                UI.toast('Photo liked!');
+            };
+
+            component('shareBtn').onClick = function() {
+                UI.toast('Share functionality demo');
+            };
+
+            component('infoBtn').onClick = function() {
+                UI.alert('This is a photo page.\n\nThe image is sent with the caption using Telegram\'s photo message type.\n\nYou can also send a photo and it will be received by the onPhoto handler!');
+            };
+        });
+
+        // Handle photos sent by user
+        onPhoto(function(photo) {
+            receivedPhoto = photo;
+            UI.toast('Photo received! ' + photo.width + 'x' + photo.height);
+        });
+    </script>
+</view>

@@ -1,0 +1,75 @@
+<view id="form-demo" web-preview="false" back-title="« Back">
+    <title>Form Example</title>
+
+    <message>
+        <b>User Registration Form</b>
+        <br/><br/>
+        Notifications: {{ notificationsEnabled ? '✅ Yes' : '❌ No' }}
+        <br/>
+        Theme: {{ selectedTheme }}
+        <br/>
+        Categories: {{ selectedCategories.join(', ') || 'None' }}
+    </message>
+
+    <components>
+        <!-- Notifications toggle (checkbox for ON/OFF) -->
+        <checkbox id="notifications" title="{{ self.isSelected ? '🔔 Notifications: ON' : '🔕 Notifications: OFF' }}" :selected="notificationsEnabled"></checkbox>
+
+        <!-- Theme selection -->
+        <radio id="theme" v-bind-selected="selectedTheme">
+            <option value="light" title="☀️ Light Theme"></option>
+            <option value="dark" title="🌙 Dark Theme"></option>
+            <option value="system" title="💻 System Default"></option>
+        </radio>
+
+        <!-- Categories multi-select (individual checkboxes) -->
+        <row>
+            <checkbox id="cat_news" title="{{ self.isSelected ? '✅ News' : '📰 News' }}"></checkbox>
+            <checkbox id="cat_updates" title="{{ self.isSelected ? '✅ Updates' : '🔄 Updates' }}"></checkbox>
+        </row>
+        <row>
+            <checkbox id="cat_offers" title="{{ self.isSelected ? '✅ Offers' : '🎁 Offers' }}"></checkbox>
+            <checkbox id="cat_tips" title="{{ self.isSelected ? '✅ Tips' : '💡 Tips' }}"></checkbox>
+        </row>
+
+        <!-- Submit button -->
+        <command id="submit" title="✅ Save Settings"></command>
+    </components>
+
+    <script>
+        var notificationsEnabled = true;
+        var selectedTheme = 'dark';
+        var selectedCategories = [];
+
+        function updateCategories() {
+            selectedCategories = [];
+            if (component('cat_news').isSelected) selectedCategories.push('news');
+            if (component('cat_updates').isSelected) selectedCategories.push('updates');
+            if (component('cat_offers').isSelected) selectedCategories.push('offers');
+            if (component('cat_tips').isSelected) selectedCategories.push('tips');
+        }
+
+        onMounted(function() {
+            component('notifications').onUpdate = function(isSelected) {
+                notificationsEnabled = isSelected;
+            };
+
+            component('theme').onUpdate = function(e) {
+                selectedTheme = e.selectedId;
+            };
+
+            component('cat_news').onUpdate = updateCategories;
+            component('cat_updates').onUpdate = updateCategories;
+            component('cat_offers').onUpdate = updateCategories;
+            component('cat_tips').onUpdate = updateCategories;
+
+            component('submit').onClick = function() {
+                updateCategories();
+                console.log('Settings saved!');
+                console.log('Notifications:', notificationsEnabled);
+                console.log('Theme:', selectedTheme);
+                console.log('Categories:', selectedCategories);
+            };
+        });
+    </script>
+</view>

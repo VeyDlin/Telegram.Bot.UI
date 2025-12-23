@@ -1,0 +1,97 @@
+<view id="ui-demo" web-preview="false" back-title="« Back">
+    <title>🎮 UI Components Demo</title>
+
+    <message>
+        <b>Telegram.Bot.UI</b> Component Showcase
+        <br/><br/>
+        Navigate through pages to see all available components.
+        <br/>
+        Current page: <b>{{ currentPageIndex + 1 }}</b>
+    </message>
+
+    <components max-rows="6">
+        <!-- Page 1: Basic Controls -->
+        <checkbox id="demoCheckbox" title="{{ self.isSelected ? '✅ Checkbox: ON' : '☐ Checkbox: OFF' }}"></checkbox>
+
+        <!-- Switch is a carousel - cycles through options on click -->
+        <switch id="demoSwitch" title="🔀 {{ self.title }}">
+            <option value="low" title="Low"></option>
+            <option value="medium" title="Medium"></option>
+            <option value="high" title="High"></option>
+        </switch>
+
+        <radio id="demoRadio">
+            <option value="opt1" title="🔘 Option A"></option>
+            <option value="opt2" title="🔘 Option B"></option>
+        </radio>
+
+        <row>
+            <open id="checkboxPage" title="📦 Checkbox Demo" target="checkbox-demo" columns="2"></open>
+            <open id="radioPage" title="🔘 Radio Demo" target="radio-demo" columns="2"></open>
+        </row>
+
+        <row>
+            <open id="switchPage" title="🔀 Switch Demo" target="switch-demo" columns="2"></open>
+            <open id="cardPage" title="🃏 Card/List Demo" target="card-demo" columns="2"></open>
+        </row>
+
+        <!-- Page 2: Advanced Examples -->
+        <row>
+            <open id="commandPage" title="⚡ Command Demo" target="command-demo" columns="2"></open>
+            <open id="settingsPage" title="⚙️ Settings Example" target="settings-demo" columns="2"></open>
+        </row>
+
+        <row>
+            <open id="autoPage" title="🔄 Auto-generation" target="auto-demo" columns="2"></open>
+            <open id="vforPage" title="📋 v-for Demo" target="vfor-demo" columns="2"></open>
+        </row>
+
+        <row>
+            <open id="notifyPage" title="📢 Notifications" target="notify-demo" columns="2"></open>
+            <open id="propsTest" title="🔗 Props Test" target="props-test" columns="2"></open>
+        </row>
+
+        <row>
+            <open id="viewmodelDemo" title="⚙️ ViewModel Demo" target="viewmodel-demo" columns="2"></open>
+            <open id="viewmodelPropsPage" title="🔗 ViewModel Props" target="viewmodel-props" columns="2"></open>
+        </row>
+
+        <row>
+            <command id="photoBtn" title="🖼️ Photo Demo" columns="2"></command>
+            <command id="docBtn" title="📄 Document Demo" columns="2"></command>
+        </row>
+
+        <row>
+            <open id="freshDemo" title="✨ Fresh Demo" target="fresh-demo" columns="2"></open>
+            <command id="infoBtn" title="ℹ️ Show Info" columns="2"></command>
+        </row>
+
+        <!-- Modal Demo Pages -->
+        <row>
+            <open id="radioModalDemo" title="🔘 Radio Modal" target="radio-modal-demo" columns="2"></open>
+            <open id="checkboxModalDemo" title="☑️ Checkbox Modal" target="checkbox-modal-demo" columns="2"></open>
+        </row>
+
+        <!-- Navigation -->
+        <navigate prevTitle="◀ Prev" nextTitle="Next ▶" counterTitle="Page {{ self.currentPage + 1 }}/{{ self.pageCount }}"></navigate>
+    </components>
+
+    <script>
+        var currentPageIndex = 0;
+
+        onMounted(function() {
+            component('infoBtn').onClick = function() {
+                UI.alert('Telegram.Bot.UI v1.0\n\nA declarative UI framework for Telegram bots.\n\nFeatures:\n• Checkbox, Radio, Switch\n• Cards with pagination\n• v-for directive\n• Media pages');
+            };
+
+            // Media demos - must be sent as new messages (can't edit text to photo)
+            component('photoBtn').onClick = function() {
+                UI.sendPage('photo');
+            };
+
+            component('docBtn').onClick = function() {
+                UI.sendPage('document');
+            };
+        });
+    </script>
+</view>

@@ -1,0 +1,50 @@
+<view id="switch-demo" web-preview="false" back-title="« Back">
+    <title>Switch Demo</title>
+
+    <message>
+        <b>Switch Component (Carousel)</b>
+        <br/><br/>
+        A carousel that cycles through options on click.
+        <br/>
+        For simple ON/OFF, use checkbox instead.
+    </message>
+
+    <components>
+        <!-- Theme switch - cycles through themes -->
+        <switch id="theme" title="Theme: {{ self.title }}">
+            <option value="light" title="☀️ Light"></option>
+            <option value="dark" title="🌙 Dark"></option>
+            <option value="auto" title="🔄 Auto"></option>
+        </switch>
+
+        <!-- Quality switch - cycles through quality levels -->
+        <switch id="quality" title="Quality: {{ self.title }}">
+            <option value="low" title="Low"></option>
+            <option value="medium" title="Medium"></option>
+            <option value="high" title="High"></option>
+            <option value="ultra" title="Ultra"></option>
+        </switch>
+
+        <!-- Language switch -->
+        <switch id="language" title="{{ self.title }}">
+            <option value="en" title="🇺🇸 English"></option>
+            <option value="ru" title="🇷🇺 Russian"></option>
+            <option value="de" title="🇩🇪 Deutsch"></option>
+        </switch>
+
+        <!-- Status switch with index display -->
+        <switch id="status" title="Status {{ self.index + 1 }}/{{ self.count }}: {{ self.title }}">
+            <option value="idle" title="⏸️ Idle"></option>
+            <option value="running" title="▶️ Running"></option>
+            <option value="paused" title="⏯️ Paused"></option>
+            <option value="stopped" title="⏹️ Stopped"></option>
+        </switch>
+    </components>
+
+    <script>
+        onMounted(function() {
+            // Initialize theme to dark
+            component('theme').cycleTo('dark');
+        });
+    </script>
+</view>

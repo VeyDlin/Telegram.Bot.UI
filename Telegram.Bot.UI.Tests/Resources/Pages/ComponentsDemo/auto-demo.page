@@ -1,0 +1,113 @@
+<view id="auto-demo" web-preview="false" back-title="« Back">
+    <title>🔄 Auto-Card Demo</title>
+
+    <message>
+        <b>Auto-Card Component</b>
+        <br/><br/>
+        Generates buttons from array data.
+        <br/>
+        Items: {{ items.length }}, Page: {{ cardPage + 1 }}/{{ cardPageCount }}
+    </message>
+
+    <components>
+        <!-- Auto-card with items binding -->
+        <auto-card id="itemsCard" :items="items" max-items="4">
+            <template slot="item">
+                <command :title="item.icon + ' ' + item.name" @click="selectItem(item)"></command>
+            </template>
+        </auto-card>
+
+        <!-- Manual navigation for auto-card -->
+        <row>
+            <command id="prevBtn" title="◀ Prev" columns="3"></command>
+            <command id="pageInfo" title="{{ cardPage + 1 }}/{{ cardPageCount }}" columns="3"></command>
+            <command id="nextBtn" title="Next ▶" columns="3"></command>
+        </row>
+
+        <!-- Actions -->
+        <row>
+            <command id="addBtn" title="➕ Add Item" columns="2"></command>
+            <command id="removeBtn" title="➖ Remove Item" columns="2"></command>
+        </row>
+
+        <command id="shuffleBtn" title="🔀 Shuffle Items"></command>
+    </components>
+
+    <script>
+        var items = [
+            { id: 1, name: 'Apple', icon: '🍎' },
+            { id: 2, name: 'Banana', icon: '🍌' },
+            { id: 3, name: 'Cherry', icon: '🍒' },
+            { id: 4, name: 'Date', icon: '🌴' },
+            { id: 5, name: 'Elderberry', icon: '🫐' },
+            { id: 6, name: 'Fig', icon: '🍇' },
+            { id: 7, name: 'Grape', icon: '🍇' },
+            { id: 8, name: 'Honeydew', icon: '🍈' }
+        ];
+
+        var cardPage = 0;
+        var cardPageCount = 1;
+        var selectedItem = null;
+
+        function selectItem(item) {
+            selectedItem = item;
+            UI.toast('Selected: ' + item.icon + ' ' + item.name);
+        }
+
+        onMounted(function() {
+            var card = component('itemsCard');
+
+            function updatePageInfo() {
+                cardPage = card.currentPage;
+                cardPageCount = card.pageCount;
+            }
+
+            component('prevBtn').onClick = function() {
+                if (card.currentPage > 0) {
+                    card.goToPage(card.currentPage - 1);
+                    updatePageInfo();
+                }
+            };
+
+            component('nextBtn').onClick = function() {
+                if (card.currentPage < card.pageCount - 1) {
+                    card.goToPage(card.currentPage + 1);
+                    updatePageInfo();
+                }
+            };
+
+            component('addBtn').onClick = function() {
+                var icons = ['🍊', '🍋', '🥝', '🍑', '🍓', '🫒'];
+                var names = ['Orange', 'Lemon', 'Kiwi', 'Peach', 'Strawberry', 'Olive'];
+                var idx = items.length % icons.length;
+                items.push({
+                    id: items.length + 1,
+                    name: names[idx],
+                    icon: icons[idx]
+                });
+                card.refreshAsync();
+                updatePageInfo();
+            };
+
+            component('removeBtn').onClick = function() {
+                if (items.length > 0) {
+                    items.pop();
+                    card.refreshAsync();
+                    updatePageInfo();
+                }
+            };
+
+            component('shuffleBtn').onClick = function() {
+                for (var i = items.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var temp = items[i];
+                    items[i] = items[j];
+                    items[j] = temp;
+                }
+                card.refreshAsync();
+            };
+
+            updatePageInfo();
+        });
+    </script>
+</view>

@@ -1,0 +1,30 @@
+<view id="props-test" web-preview="false" back-title="« Back">
+    <title>Props Test</title>
+
+    <message>
+        <b>Page Props Demo</b>
+        <br/><br/>
+        Test passing data between pages.
+    </message>
+
+    <components>
+        <command id="sendWithProps" title="Send With Props"></command>
+        <command id="sendWithObject" title="Send With Object"></command>
+        <navigate></navigate>
+    </components>
+
+    <script>
+        onMounted(function() {
+            component('sendWithProps').onClick = function() {
+                UI.navigate('props-target', true, { itemId: 42, mode: 'edit' });
+            };
+
+            component('sendWithObject').onClick = function() {
+                UI.navigate('props-target', true, {
+                    user: { name: 'Alice', role: 'Admin' },
+                    items: [1, 2, 3]
+                });
+            };
+        });
+    </script>
+</view>

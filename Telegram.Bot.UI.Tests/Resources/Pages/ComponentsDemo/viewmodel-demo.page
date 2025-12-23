@@ -1,0 +1,39 @@
+<view id="viewmodel-demo" vmodel="Telegram.Bot.UI.Demo.ViewModels.CounterViewModel" web-preview="false" back-title="« Back">
+    <title>ViewModel Demo</title>
+
+    <message id="display">
+        <b>ViewModel Demo</b>
+        <br/><br/>
+        Count: {{ VModel.Count }}
+        <br/>
+        Status: {{ VModel.GetStatus() }}
+    </message>
+
+    <components>
+        <row>
+            <command id="decrement" title="- Decrement" columns="2"></command>
+            <command id="increment" title="+ Increment" columns="2"></command>
+        </row>
+        <command id="reset" title="Reset"></command>
+        <navigate></navigate>
+    </components>
+
+    <script>
+        onMounted(function() {
+            component('increment').onClick = function() {
+                VModel.Increment();
+                UI.refresh();
+            };
+
+            component('decrement').onClick = function() {
+                VModel.Decrement();
+                UI.refresh();
+            };
+
+            component('reset').onClick = function() {
+                VModel.Reset();
+                UI.refresh();
+            };
+        });
+    </script>
+</view>

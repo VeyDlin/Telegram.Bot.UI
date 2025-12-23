@@ -1,0 +1,26 @@
+<view id="home" web-preview="false">
+    <title>{{ $t('Information') }}</title>
+
+    <message md resource="text/welcome-{{ Base.localization.code }}">
+    </message>
+
+    <components>
+        <row>
+            <open id="uiDemo" title="🎮 UI Components" target="ui-demo" columns="2"></open>
+            <open id="languageBtn" :title="'🌐 ' + $t('Language')" target="language" columns="2"></open>
+        </row>
+
+        <row>
+            <link id="supportLink" :title="'🆘 ' + $t('Support')" url="https://t.me/BotFather" columns="2"></link>
+            <command id="aboutBtn" :title="'ℹ️ ' + $t('About')" columns="2"></command>
+        </row>
+    </components>
+
+    <script>
+        onMounted(function() {
+            component('aboutBtn').onClick = function() {
+                UI.alert('Telegram.Bot.UI Demo v1.0\n\nA declarative UI framework for Telegram bots.\n\nFeatures:\n• XML-based page definitions\n• JavaScript scripting\n• ViewModels support\n• Localization\n• Media pages');
+            };
+        });
+    </script>
+</view>

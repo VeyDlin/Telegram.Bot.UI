@@ -1,0 +1,79 @@
+<view id="settings-demo" web-preview="false" back-title="« Back">
+    <title>⚙️ Settings</title>
+
+    <message>
+        <b>Application Settings</b>
+        <br/><br/>
+        Configure your preferences below.
+    </message>
+
+    <components max-rows="5">
+        <!-- Page 1: General - using checkboxes for ON/OFF toggles -->
+        <checkbox id="darkMode" title="{{ self.isSelected ? '🌙 Dark Mode: ON' : '☀️ Dark Mode: OFF' }}"></checkbox>
+
+        <checkbox id="sounds" title="{{ self.isSelected ? '🔊 Sounds: ON' : '🔇 Sounds: OFF' }}"></checkbox>
+
+        <checkbox id="vibration" title="{{ self.isSelected ? '📳 Vibration: ON' : '📴 Vibration: OFF' }}"></checkbox>
+
+        <radio id="fontSize">
+            <option value="small" title="🔤 Small Text"></option>
+            <option value="medium" title="🔤 Medium Text"></option>
+            <option value="large" title="🔤 Large Text"></option>
+        </radio>
+
+        <!-- Page 2: Privacy -->
+        <checkbox id="analytics" title="{{ self.isSelected ? '📊 Analytics: ON' : '📊 Analytics: OFF' }}"></checkbox>
+
+        <checkbox id="location" title="{{ self.isSelected ? '📍 Location: ON' : '📍 Location: OFF' }}"></checkbox>
+
+        <row>
+            <checkbox id="shareContacts" title="👥 Contacts"></checkbox>
+            <checkbox id="sharePhotos" title="📷 Photos"></checkbox>
+        </row>
+
+        <!-- Page 3: About -->
+        <command id="version" title="📱 Version 1.0.0"></command>
+
+        <command id="terms" title="📄 Terms of Service"></command>
+
+        <command id="privacy" title="🔒 Privacy Policy"></command>
+
+        <command id="resetAll" title="⚠️ Reset All Settings"></command>
+
+        <!-- Navigation -->
+        <navigate></navigate>
+    </components>
+
+    <script>
+        onMounted(function() {
+            // Initialize some defaults using checkbox toggle
+            component('darkMode').toggle();
+            component('sounds').toggle();
+            component('fontSize').select('medium');
+
+            component('version').onClick = function() {
+                UI.alert('Telegram.Bot.UI Demo\nVersion: 1.0.0\nBuild: 2024.12.14');
+            };
+
+            component('terms').onClick = function() {
+                UI.alert('Terms of Service\n\nThis is a demo application.\nNo actual terms apply.');
+            };
+
+            component('privacy').onClick = function() {
+                UI.alert('Privacy Policy\n\nThis demo does not collect any data.\nAll settings are stored locally.');
+            };
+
+            component('resetAll').onClick = function() {
+                component('darkMode').isSelected = false;
+                component('sounds').isSelected = false;
+                component('vibration').isSelected = false;
+                component('analytics').isSelected = false;
+                component('location').isSelected = false;
+                component('shareContacts').isSelected = false;
+                component('sharePhotos').isSelected = false;
+                component('fontSize').select('medium');
+                UI.toast('All settings have been reset!');
+            };
+        });
+    </script>
+</view>

@@ -1,0 +1,42 @@
+<view id="card-demo" web-preview="false" back-title="« Back">
+    <title>Card/List Demo</title>
+
+    <message>
+        <b>Card Component</b>
+        <br/><br/>
+        Paginated list of items with navigation.
+        <br/>
+        Page {{ component('itemsList').currentPage + 1 }} of {{ component('itemsList').pageCount }}
+    </message>
+
+    <components>
+        <!-- Card with items generated via v-for - paginated at 3 per page -->
+        <card id="itemsList" max-items="3">
+            <command v-for="(item, idx) in items" id="{{ 'item-' + idx }}" title="{{ item.icon }} {{ item.name }}"></command>
+        </card>
+
+        <!-- Navigation for the card -->
+        <navigate target="itemsList" prevTitle="◀" nextTitle="▶"></navigate>
+    </components>
+
+    <script>
+        var items = [
+            { icon: '📱', name: 'Phone', desc: 'Mobile device' },
+            { icon: '💻', name: 'Laptop', desc: 'Portable computer' },
+            { icon: '🖥️', name: 'Desktop', desc: 'Stationary computer' },
+            { icon: '⌚', name: 'Watch', desc: 'Smart wearable' },
+            { icon: '🎧', name: 'Headphones', desc: 'Audio device' },
+            { icon: '📷', name: 'Camera', desc: 'Photo device' },
+            { icon: '🎮', name: 'Console', desc: 'Gaming device' },
+            { icon: '📺', name: 'TV', desc: 'Display screen' }
+        ];
+
+        onMounted(function() {
+            items.forEach(function(item, idx) {
+                component('item-' + idx).onClick = function() {
+                    UI.toast(item.icon + ' ' + item.name + ': ' + item.desc);
+                };
+            });
+        });
+    </script>
+</view>

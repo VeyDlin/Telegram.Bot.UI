@@ -1,0 +1,43 @@
+<view id="checkbox-demo" web-preview="false" back-title="« Back">
+    <title>Checkbox Demo</title>
+
+    <message>
+        <b>Checkbox Component</b>
+        <br/><br/>
+        A simple toggle button that can be ON or OFF.
+        <br/>
+        Current state: <b>{{ isEnabled ? 'Enabled' : 'Disabled' }}</b>
+    </message>
+
+    <components>
+        <!-- Basic checkbox -->
+        <checkbox id="basic" title="Basic Checkbox" v-bind-selected="isEnabled"></checkbox>
+
+        <!-- Checkbox with dynamic title -->
+        <checkbox id="dynamic" title="{{ self.isSelected ? '✅ Active' : '❌ Inactive' }}"></checkbox>
+
+        <!-- Checkbox with emoji states -->
+        <checkbox id="emoji" title="{{ self.isSelected ? '🌟 Favorite' : '☆ Add to favorites' }}"></checkbox>
+
+        <!-- Row of checkboxes -->
+        <row>
+            <checkbox id="opt1" title="Option A" columns="2"></checkbox>
+            <checkbox id="opt2" title="Option B" columns="2"></checkbox>
+        </row>
+
+        <row>
+            <checkbox id="opt3" title="Option C" columns="2"></checkbox>
+            <checkbox id="opt4" title="Option D" columns="2"></checkbox>
+        </row>
+    </components>
+
+    <script>
+        var isEnabled = false;
+
+        onMounted(function() {
+            component('basic').onUpdate = function(e) {
+                isEnabled = e.selected;
+            };
+        });
+    </script>
+</view>

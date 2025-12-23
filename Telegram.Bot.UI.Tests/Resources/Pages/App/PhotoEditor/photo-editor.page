@@ -1,0 +1,104 @@
+<view id="photo-editor" web-preview="false" vmodel="Telegram.Bot.UI.Demo.ViewModels.PhotoEditorViewModel">
+    <title>{{ $t('Settings') }}</title>
+
+    <script>
+        // Filter settings (store both ID for logic and title for display)
+        var applyInvert = false;
+        var brightness = 'off';
+        var brightnessTitle = $t('Off');
+        var contrast = 'off';
+        var contrastTitle = $t('Off');
+        var blur = 'off';
+        var blurTitle = $t('Off');
+        var pixelate = 'off';
+        var pixelateTitle = $t('Off');
+    </script>
+
+    <message md resource="text/description-{{ Base.localization.code || 'en' }}">
+    </message>
+
+    <components>
+        <!-- Invert checkbox -->
+        <checkbox id="invertCheck" :title="$t('Inversion')" v-bind-selected="applyInvert"
+            v-on-update="applyInvert = event.selected;">
+        </checkbox>
+
+        <!-- Filter settings row 1 -->
+        <row>
+            <radio-modal id="brightnessRadio" :title="$t('Brightness') + ' <' + brightnessTitle + '>'"
+                v-bind-selected="brightness"
+                v-on-select="brightness = event.select.id; brightnessTitle = event.select.title;"
+                columns="2">
+                <message>
+                    {{ $t('Select brightness level') }}
+                    <wallpaper url="{{ VModel.GetWallpaperUrl(self.id === 'off' ? 'off' : 'brightness-' + self.id) }}"/>
+                </message>
+                <option :title="$t('Off')" value="off"></option>
+                <option :title="$t('Low')" value="low"></option>
+                <option :title="$t('Medium')" value="medium"></option>
+                <option :title="$t('High')" value="high"></option>
+            </radio-modal>
+
+            <radio-modal id="contrastRadio" :title="$t('Contrast') + ' <' + contrastTitle + '>'"
+                v-bind-selected="contrast"
+                v-on-select="contrast = event.select.id; contrastTitle = event.select.title;"
+                columns="2">
+                <message>
+                    {{ $t('Select contrast level') }}
+                    <wallpaper url="{{ VModel.GetWallpaperUrl(self.id === 'off' ? 'off' : 'contrast-' + self.id) }}"/>
+                </message>
+                <option :title="$t('Off')" value="off"></option>
+                <option :title="$t('Low')" value="low"></option>
+                <option :title="$t('Medium')" value="medium"></option>
+                <option :title="$t('High')" value="high"></option>
+            </radio-modal>
+        </row>
+
+        <!-- Filter settings row 2 -->
+        <row>
+            <radio-modal id="blurRadio" :title="$t('Blur') + ' <' + blurTitle + '>'"
+                v-bind-selected="blur"
+                v-on-select="blur = event.select.id; blurTitle = event.select.title;"
+                columns="2">
+                <message>
+                    {{ $t('Select blur level') }}
+                    <wallpaper url="{{ await VModel.GetWallpaperUrlAsync(self.id === 'off' ? 'off' : 'blur-' + self.id) }}"/>
+                </message>
+                <option :title="$t('Off')" value="off"></option>
+                <option :title="$t('Low')" value="low"></option>
+                <option :title="$t('Medium')" value="medium"></option>
+                <option :title="$t('High')" value="high"></option>
+            </radio-modal>
+
+            <radio-modal id="pixelateRadio" :title="$t('Pixelate') + ' <' + pixelateTitle + '>'"
+                v-bind-selected="pixelate"
+                v-on-select="pixelate = event.select.id; pixelateTitle = event.select.title;"
+                columns="2">
+                <message>
+                    {{ $t('Select pixelation level') }}
+                    <wallpaper url="{{ VModel.GetWallpaperUrl(self.id === 'off' ? 'off' : 'pixelate-' + self.id) }}"/>
+                </message>
+                <option :title="$t('Off')" value="off"></option>
+                <option :title="$t('Low')" value="low"></option>
+                <option :title="$t('Medium')" value="medium"></option>
+                <option :title="$t('High')" value="high"></option>
+            </radio-modal>
+        </row>
+
+        <!-- Generate button -->
+        <command id="generateBtn" :title="'✨ ' + $t('Start')" @click="generate()"></command>
+    </components>
+
+    <script>
+        async function generate() {
+            // Navigate to wait page (message shows "Processing...")
+            const waitPage = await UI.navigateAsync('photo-editor-wait', false);
+
+            // Process photo, dispose pages after result is sent
+            await User.GeneratePhoto(applyInvert, brightness, contrast, blur, pixelate, async () => {
+                // waitPage.dispose() not needed - dispose() disposes children too
+                await UI.disposeAsync(); // dispose current page + all children (waitPage)
+            });
+        }
+    </script>
+</view>

@@ -1,0 +1,4 @@
+<view id="photo-editor-wait" web-preview="false" back-to-parent="false">
+    <message md resource="text/wait-{{ Base.localization.code || 'en' }}">
+    </message>
+</view>

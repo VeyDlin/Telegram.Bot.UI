@@ -1,0 +1,47 @@
+<view id="document" web-preview="false" back-title="« Back">
+    <title>Document</title>
+
+    <document src="@/Media/sample.png"></document>
+
+    <script>
+        var receivedDocument = null;
+    </script>
+
+    <message md resource="text/caption-{{ Base.localization.code }}">
+    </message>
+
+    <components>
+        <!-- Media-to-media navigation -->
+        <open id="toPhoto" title="🖼️ Open as Photo" target="photo"></open>
+
+        <!-- Actions -->
+        <row>
+            <command id="downloadBtn" title="⬇️ Download" columns="2"></command>
+            <command id="previewBtn" title="👁️ Preview" columns="2"></command>
+        </row>
+
+        <command id="infoBtn" title="ℹ️ Document Info"></command>
+    </components>
+
+    <script>
+        onMounted(function() {
+            component('downloadBtn').onClick = function() {
+                UI.toast('Download started (demo)');
+            };
+
+            component('previewBtn').onClick = function() {
+                UI.toast('Preview functionality demo');
+            };
+
+            component('infoBtn').onClick = function() {
+                UI.alert('This is a document page.\n\nThe file is sent as a document, preserving original quality.\n\nUse <document> for files you want users to download.\n\nYou can also send a file and it will be received by the onDocument handler!');
+            };
+        });
+
+        // Handle documents sent by user
+        onDocument(function(doc) {
+            receivedDocument = doc;
+            UI.toast('Document received! ' + doc.fileName);
+        });
+    </script>
+</view>

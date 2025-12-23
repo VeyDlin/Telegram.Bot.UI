@@ -1,0 +1,18 @@
+<view id="user-agreement" web-preview="false">
+    <title>{{ $t('User agreement') }}</title>
+
+    <message md resource="text/description-{{ Base.localization.code || 'en' }}">
+    </message>
+
+    <components>
+        <radio id="languageRadio" v-bind-selected="Base.localization.code || 'en'"
+            v-on-select="Base.localization.code = event.select.id; User.SetLanguage(event.select.id); UI.refresh();">
+            <option title="🇺🇸 English" value="en"></option>
+            <option title="🇷🇺 Russian" value="ru"></option>
+        </radio>
+
+        <command id="acceptBtn" :title="'✅ ' + $t('I solemnly swear!')"
+            v-on-click="User.AcceptLicenseFromPage(); UI.close(); UI.navigate('home', false);">
+        </command>
+    </components>
+</view>

@@ -1,0 +1,90 @@
+<view id="radio-modal-demo" web-preview="false" back-title="« Back">
+    <title>🔘 Radio Modal Demo</title>
+
+    <message>
+        <b>Radio Modal Component</b>
+        <br/><br/>
+        Select one option from a list on a separate page.
+        <br/><br/>
+        Selected color: <b>{{ selectedColor }}</b>
+        <br/>
+        Selected size: <b>{{ selectedSize }}</b>
+    </message>
+
+    <script>
+        var selectedColor = 'red';
+        var selectedSize = 'medium';
+
+        var colors = [
+            { id: 'red', name: '🔴 Red', desc: 'Bright and energetic' },
+            { id: 'green', name: '🟢 Green', desc: 'Calm and natural' },
+            { id: 'blue', name: '🔵 Blue', desc: 'Deep and reliable' },
+            { id: 'yellow', name: '🟡 Yellow', desc: 'Sunny and cheerful' },
+            { id: 'purple', name: '🟣 Purple', desc: 'Mysterious and royal' }
+        ];
+    </script>
+
+    <components>
+        <!-- Simple radio-modal -->
+        <radio-modal id="colorModal" :title="'🎨 Color: ' + selectedColor"
+            v-bind-selected="selectedColor"
+            v-on-select="selectedColor = event.select.id; UI.toast('Selected ' + event.select.title);">
+            <message>Choose a color from the list below:</message>
+            <option title="🔴 Red" value="red">
+                <message>
+                    <b>Red Color</b>
+                    <br/><br/>
+                    Symbolizes energy, passion and strength.
+                    <wallpaper url="https://placehold.co/100x100/ff0000/ffffff?text=RED"/>
+                </message>
+            </option>
+            <option title="🟢 Green" value="green">
+                <message>
+                    <b>Green Color</b>
+                    <br/><br/>
+                    Symbolizes nature, growth and harmony.
+                    <wallpaper url="https://placehold.co/100x100/00ff00/ffffff?text=GREEN"/>
+                </message>
+            </option>
+            <option title="🔵 Blue" value="blue">
+                <message>
+                    <b>Blue Color</b>
+                    <br/><br/>
+                    Symbolizes calmness, trust and depth.
+                    <wallpaper url="https://placehold.co/100x100/0000ff/ffffff?text=BLUE"/>
+                </message>
+            </option>
+        </radio-modal>
+
+        <!-- Radio-modal with dynamic title -->
+        <radio-modal id="sizeModal" :title="'📐 Size: ' + selectedSize"
+            v-bind-selected="selectedSize"
+            v-on-select="selectedSize = event.select.id;">
+            <option title="S - Small" value="small"></option>
+            <option title="M - Medium" value="medium"></option>
+            <option title="L - Large" value="large"></option>
+            <option title="XL - Extra Large" value="xlarge"></option>
+        </radio-modal>
+
+        <!-- Radio-modal with v-for options -->
+        <radio-modal id="dynamicModal" title="🌈 Dynamic Options">
+            <message>These options are generated via v-for:</message>
+            <option v-for="color in colors"
+                :title="color.name"
+                :value="color.id">
+                <message>{{ color.name }}: {{ color.desc }}</message>
+            </option>
+        </radio-modal>
+
+        <!-- Radio-modal with pagination -->
+        <radio-modal id="paginatedModal" title="📄 Paginated (3 per page)"
+            maxItems="3">
+            <option title="Page 1" value="p1"></option>
+            <option title="Page 2" value="p2"></option>
+            <option title="Page 3" value="p3"></option>
+            <option title="Page 4" value="p4"></option>
+            <option title="Page 5" value="p5"></option>
+            <option title="Page 6" value="p6"></option>
+        </radio-modal>
+    </components>
+</view>

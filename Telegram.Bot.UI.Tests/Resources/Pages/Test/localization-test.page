@@ -1,0 +1,21 @@
+<view id="localization-test" web-preview="false">
+    <title>Localization Test</title>
+
+    <message>
+        Testing $t() function in bindings
+    </message>
+
+    <components>
+        <!-- Test 1: $t in binding -->
+        <checkbox id="test1" :title="$t('Inversion')"></checkbox>
+
+        <!-- Test 2: $t with concatenation -->
+        <checkbox id="test2" :title="'Prefix: ' + $t('Inversion')"></checkbox>
+
+        <!-- Test 3: Static title (should work) -->
+        <checkbox id="test3" title="Static Title"></checkbox>
+
+        <!-- Test 4: $t in template syntax -->
+        <checkbox id="test4" title="{{ $t('Inversion') }}"></checkbox>
+    </components>
+</view>

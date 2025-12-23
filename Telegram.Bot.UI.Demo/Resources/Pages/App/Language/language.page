@@ -1,0 +1,18 @@
+<view id="language" web-preview="false" back-title="« Back">
+    <title>{{ flags[Base.localization.code || 'en'] }} {{ $t('Language select') }}</title>
+
+    <message resource="text/description-{{ Base.localization.code || 'en' }}">
+    </message>
+
+    <script>
+        var flags = { ru: '🇷🇺', en: '🇺🇸' };
+    </script>
+
+    <components>
+        <radio id="languageRadio" v-bind-selected="Base.localization.code || 'en'"
+            v-on-select="Base.localization.code = event.select.id; User.SetLanguage(event.select.id); UI.toast($t('Language changed')); UI.refresh();">
+            <option title="🇺🇸 English" value="en"></option>
+            <option title="🇷🇺 Russian" value="ru"></option>
+        </radio>
+    </components>
+</view>

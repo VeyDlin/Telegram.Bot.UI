@@ -1,0 +1,108 @@
+<view id="checkbox-modal-demo" web-preview="false" back-title="« Back">
+    <title>☑️ Checkbox Modal Demo</title>
+
+    <message>
+        <b>Checkbox Modal Component</b>
+        <br/><br/>
+        Multiple selection on a separate page.
+        <br/><br/>
+        Selected tags: <b>{{ selectedTags.length > 0 ? selectedTags.join(', ') : 'none' }}</b>
+        <br/>
+        Selected features: <b>{{ selectedFeatures.length }}</b> items
+    </message>
+
+    <script>
+        var selectedTags = ['work'];
+        var selectedFeatures = [];
+
+        var features = [
+            { id: 'dark', name: '🌙 Dark Theme', desc: 'Less eye strain' },
+            { id: 'notify', name: '🔔 Notifications', desc: 'Push notifications for events' },
+            { id: 'sync', name: '☁️ Sync', desc: 'Data across all devices' },
+            { id: 'backup', name: '💾 Backup', desc: 'Automatic backups' },
+            { id: '2fa', name: '🔐 Two-Factor Auth', desc: 'Additional security' }
+        ];
+    </script>
+
+    <components>
+        <!-- Simple checkbox-modal -->
+        <checkbox-modal id="tagsModal" title="🏷️ Tags"
+            v-bind-selected="selectedTags.join(',')"
+            v-on-update="selectedTags = event.selectedIds; UI.toast(event.selectedCount + ' tags selected');">
+            <message>Select tags for the note:</message>
+            <option title="💼 Work" value="work">
+                <message>
+                    <b>Tag: Work</b>
+                    <br/><br/>
+                    Use for work tasks and projects.
+                </message>
+            </option>
+            <option title="🏠 Home" value="home">
+                <message>
+                    <b>Tag: Home</b>
+                    <br/><br/>
+                    For household tasks and shopping.
+                </message>
+            </option>
+            <option title="⭐ Important" value="important">
+                <message>
+                    <b>Tag: Important</b>
+                    <br/><br/>
+                    Mark the most important notes.
+                </message>
+            </option>
+            <option title="💡 Ideas" value="ideas"></option>
+            <option title="📅 Events" value="events"></option>
+        </checkbox-modal>
+
+        <!-- Checkbox-modal with v-for options -->
+        <checkbox-modal id="featuresModal" title="⚙️ Features"
+            v-on-update="selectedFeatures = event.selectedIds;">
+            <message>
+                <b>Configure app features</b>
+                <br/><br/>
+                Selected: {{ selectedFeatures.length }} of {{ features.length }}
+            </message>
+            <option v-for="feat in features"
+                :title="feat.name"
+                :value="feat.id">
+                <message>
+                    <b>{{ feat.name }}</b>
+                    <br/><br/>
+                    {{ feat.desc }}
+                </message>
+            </option>
+        </checkbox-modal>
+
+        <!-- Checkbox-modal with pagination -->
+        <checkbox-modal id="paginatedCheckbox" title="📄 Paginated"
+            maxItems="3">
+            <option title="Option 1" value="1"></option>
+            <option title="Option 2" value="2"></option>
+            <option title="Option 3" value="3"></option>
+            <option title="Option 4" value="4"></option>
+            <option title="Option 5" value="5"></option>
+            <option title="Option 6" value="6"></option>
+        </checkbox-modal>
+
+        <!-- Simple buttons -->
+        <row>
+            <command id="showSelection" title="📋 Show Selection" columns="2"></command>
+            <command id="clearAll" title="🗑️ Clear All" columns="2"></command>
+        </row>
+    </components>
+
+    <script>
+        onMounted(function() {
+            component('showSelection').onClick = function() {
+                UI.alert('Tags: ' + selectedTags.join(', ') + '\n\nFeatures: ' + selectedFeatures.join(', '));
+            };
+
+            component('clearAll').onClick = function() {
+                selectedTags = [];
+                selectedFeatures = [];
+                UI.toast('Selection cleared');
+            };
+        });
+    </script>
+</view>

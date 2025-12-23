@@ -1,0 +1,29 @@
+<view id="viewmodel-props" web-preview="false" back-title="« Back">
+    <title>ViewModel Props</title>
+
+    <message>
+        <b>ViewModel with Props</b>
+        <br/><br/>
+        Test passing initial data to ViewModels via props.
+        <br/><br/>
+        Click a button to navigate to the counter demo with a custom starting value.
+    </message>
+
+    <components>
+        <command id="startAt10" title="Start at 10"></command>
+        <command id="startAt100" title="Start at 100"></command>
+        <navigate></navigate>
+    </components>
+
+    <script>
+        onMounted(function() {
+            component('startAt10').onClick = function() {
+                UI.navigate('viewmodel-demo', true, { initialCount: 10 });
+            };
+
+            component('startAt100').onClick = function() {
+                UI.navigate('viewmodel-demo', true, { initialCount: 100 });
+            };
+        });
+    </script>
+</view>

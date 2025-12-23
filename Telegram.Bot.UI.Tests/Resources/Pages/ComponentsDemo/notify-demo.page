@@ -1,0 +1,54 @@
+<view id="notify-demo" web-preview="false" back-title="« Back">
+    <title>Notifications Demo</title>
+
+    <message>
+        <b>Notifications &amp; Actions</b>
+        <br/><br/>
+        Toast: Brief notification at bottom
+        <br/>
+        Alert: Modal popup with OK button
+        <br/>
+        Close: Deletes this message
+    </message>
+
+    <components>
+        <!-- Toast notification -->
+        <command id="toastBtn" title="📢 Show Toast"></command>
+
+        <!-- Alert popup -->
+        <command id="alertBtn" title="⚠️ Show Alert"></command>
+
+        <!-- Close page (delete message) -->
+        <command id="closeBtn" title="🗑️ Close Page"></command>
+
+        <!-- Confirm action pattern -->
+        <row>
+            <command id="confirmBtn" title="✅ Confirm Action" columns="2"></command>
+            <command id="cancelBtn" title="❌ Cancel" columns="2"></command>
+        </row>
+    </components>
+
+    <script>
+        onMounted(function() {
+            component('toastBtn').onClick = function() {
+                UI.toast('This is a toast notification!');
+            };
+
+            component('alertBtn').onClick = function() {
+                UI.alert('This is a modal alert!\n\nClick OK to dismiss.');
+            };
+
+            component('closeBtn').onClick = function() {
+                UI.close();
+            };
+
+            component('confirmBtn').onClick = function() {
+                UI.toast('Action confirmed!');
+            };
+
+            component('cancelBtn').onClick = function() {
+                UI.toast('Action cancelled');
+            };
+        });
+    </script>
+</view>

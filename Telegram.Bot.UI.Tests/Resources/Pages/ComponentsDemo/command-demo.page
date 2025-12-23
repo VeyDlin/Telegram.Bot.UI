@@ -1,0 +1,82 @@
+<view id="command-demo" web-preview="false" back-title="« Back">
+    <title>Command Demo</title>
+
+    <message>
+        <b>Command Component</b>
+        <br/><br/>
+        Clickable buttons that trigger actions.
+        <br/>
+        Click count: <b>{{ clickCount }}</b>
+    </message>
+
+    <components>
+        <!-- Basic command -->
+        <command id="clickMe" title="👆 Click Me!"></command>
+
+        <!-- Commands in a row -->
+        <row>
+            <command id="like" title="👍 Like" columns="2"></command>
+            <command id="dislike" title="👎 Dislike" columns="2"></command>
+        </row>
+
+        <!-- Action commands -->
+        <row>
+            <command id="save" title="💾 Save" columns="2"></command>
+            <command id="delete" title="🗑️ Delete" columns="2"></command>
+        </row>
+
+        <!-- Counter example -->
+        <row>
+            <command id="minus" title="➖" columns="3"></command>
+            <command id="counter" title="{{ counter }}"></command>
+            <command id="plus" title="➕" columns="3"></command>
+        </row>
+
+        <!-- Reset -->
+        <command id="reset" title="🔄 Reset Counter"></command>
+    </components>
+
+    <script>
+        var clickCount = 0;
+        var counter = 0;
+
+        onMounted(function() {
+            component('clickMe').onClick = function() {
+                clickCount++;
+            };
+
+            component('plus').onClick = function() {
+                counter++;
+                clickCount++;
+            };
+
+            component('minus').onClick = function() {
+                counter--;
+                clickCount++;
+            };
+
+            component('reset').onClick = function() {
+                counter = 0;
+                clickCount++;
+            };
+
+            component('like').onClick = function() {
+                clickCount++;
+            };
+
+            component('dislike').onClick = function() {
+                clickCount++;
+            };
+
+            component('save').onClick = function() {
+                clickCount++;
+                UI.toast('Data saved!');
+            };
+
+            component('delete').onClick = function() {
+                clickCount++;
+                UI.alert('Delete action triggered!\n\nIn a real app, this would delete data.');
+            };
+        });
+    </script>
+</view>

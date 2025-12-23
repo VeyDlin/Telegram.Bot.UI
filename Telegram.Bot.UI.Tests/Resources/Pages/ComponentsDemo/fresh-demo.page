@@ -1,0 +1,65 @@
+<view id="fresh-demo" web-preview="false" back-title="« Back">
+    <title>Fresh Page Demo</title>
+
+    <message>
+        <b>Fresh Page Instance Demo</b>
+        <br/><br/>
+        Instance ID: <code>{{ instanceId }}</code>
+        <br/>
+        Counter: <b>{{ counter }}</b>
+        <br/><br/>
+        Each time you use <code>navigateFresh()</code>, a new instance with new ID is created.
+    </message>
+
+    <components>
+        <command id="incrementBtn" title="➕ Increment Counter"></command>
+
+        <row>
+            <!-- Normal navigate - uses cached instance -->
+            <command id="navigateCachedBtn" title="🔄 Navigate (Cached)" columns="2"></command>
+            <!-- Fresh navigate - creates new instance -->
+            <command id="navigateFreshBtn" title="✨ Navigate Fresh" columns="2"></command>
+        </row>
+
+        <row>
+            <!-- Without back button -->
+            <command id="navigateNoBackBtn" title="🚀 Navigate (No Back)" columns="2"></command>
+            <!-- Clear keyboard demo -->
+            <command id="clearKeyboardBtn" title="🧹 Clear Keyboard" columns="2"></command>
+        </row>
+    </components>
+
+    <script>
+        // Generate unique instance ID on page creation
+        var instanceId = Math.random().toString(36).substring(2, 10);
+        var counter = 0;
+
+        onMounted(function() {
+            component('incrementBtn').onClick = function() {
+                counter++;
+                UI.refresh();
+            };
+
+            // Normal navigate - reuses cached page (same instanceId)
+            component('navigateCachedBtn').onClick = function() {
+                UI.navigate('fresh-demo');
+            };
+
+            // Fresh navigate - creates new page (new instanceId)
+            component('navigateFreshBtn').onClick = function() {
+                UI.navigateFresh('fresh-demo');
+            };
+
+            // Navigate without back button
+            component('navigateNoBackBtn').onClick = function() {
+                UI.navigate('fresh-demo', false);
+            };
+
+            // Clear keyboard from message
+            component('clearKeyboardBtn').onClick = function() {
+                UI.clearKeyboard();
+                UI.toast('Keyboard cleared!');
+            };
+        });
+    </script>
+</view>

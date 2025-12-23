@@ -1,0 +1,42 @@
+<view id="props-target" web-preview="false" back-title="« Back">
+    <title>Props Target</title>
+
+    <message id="propsDisplay">
+        <b>Props received!</b>
+        <br/><br/>
+        {{ displayText }}
+    </message>
+
+    <components>
+        <navigate></navigate>
+    </components>
+
+    <script>
+        var displayText = '';
+
+        onMounted(function() {
+            var p = props || {};
+            var lines = [];
+
+            if (p.itemId !== undefined) {
+                lines.push('itemId: ' + p.itemId);
+            }
+            if (p.mode !== undefined) {
+                lines.push('mode: ' + p.mode);
+            }
+            if (p.user !== undefined) {
+                lines.push('user.name: ' + p.user.name);
+                lines.push('user.role: ' + p.user.role);
+            }
+            if (p.items !== undefined) {
+                lines.push('items: [' + p.items.join(', ') + ']');
+            }
+
+            if (lines.length === 0) {
+                displayText = 'No props received';
+            } else {
+                displayText = lines.join('\n');
+            }
+        });
+    </script>
+</view>

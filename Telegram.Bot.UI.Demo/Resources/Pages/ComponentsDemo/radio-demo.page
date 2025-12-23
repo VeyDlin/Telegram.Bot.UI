@@ -1,0 +1,44 @@
+<view id="radio-demo" web-preview="false" back-title="« Back">
+    <title>Radio Demo</title>
+
+    <message>
+        <b>Radio Component</b>
+        <br/><br/>
+        Select one option from a group.
+        <br/>
+        Selected: <b>{{ selectedOption }}</b>
+    </message>
+
+    <components>
+        <!-- Basic radio group -->
+        <radio id="colors" v-bind-selected="selectedOption">
+            <option value="red" title="🔴 Red"></option>
+            <option value="green" title="🟢 Green"></option>
+            <option value="blue" title="🔵 Blue"></option>
+        </radio>
+
+        <!-- Radio with icons -->
+        <radio id="sizes">
+            <option value="small" title="S"></option>
+            <option value="medium" title="M"></option>
+            <option value="large" title="L"></option>
+            <option value="xlarge" title="XL"></option>
+        </radio>
+
+        <!-- Horizontal radio (2 columns) -->
+        <radio id="yesno" columns="2">
+            <option value="yes" title="👍 Yes"></option>
+            <option value="no" title="👎 No"></option>
+        </radio>
+    </components>
+
+    <script>
+        var selectedOption = 'red';
+
+        onMounted(function() {
+            component('colors').onUpdate = function(e) {
+                selectedOption = e.selectedId;
+            };
+        });
+    </script>
+</view>

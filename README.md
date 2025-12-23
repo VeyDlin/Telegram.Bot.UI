@@ -9,35 +9,44 @@ Visit the repository with a demo project of a photo editor bot [Telegram.Bot.UI.
 
 ## ✨ Features
 
+- **Two API approaches:**
+  - **Declarative XML pages** (`.page` files) - Simple, hot-reloadable, Vue-like syntax
+  - **C# MessagePage classes** - Full control, programmatic approach
 - Different bot operation modes:
   - Long Polling
   - WebHook via controller
   - Built-in WebHook server
-- Text templating system
-- Resource loader (texts, images, etc.)
-- Nested interface pages
+- Text templating system with `{{ }}` expressions
+- Resource loader (texts, images, etc.) with virtual resource support
+- Nested interface pages with navigation
 - Built-in command parser
 - User permissions management system (useful for bans)
 - Safe bot shutdown mechanism (waits for all critical operations to complete)
 - Page wallpaper support (via web preview)
 - Built-in license agreement acceptance mechanism
 - Rich library of interactive menu components
+- JavaScript scripting in pages (powered by Jint)
+- ViewModels for C#/JavaScript integration
 
 ## Interface Components
 
-The library provides numerous interactive components:
+The library provides numerous interactive components for both declarative and programmatic APIs:
 
-- `MenuCheckbox` - Checkboxes for enabling/disabling options
-- `MenuCheckboxGroup` - Group of checkboxes for multiple selection
-- `MenuCheckboxModal` - Modal window with checkboxes (separate page)
-- `MenuCommand` - Button for triggering custom actions
-- `MenuLink` - Link to external resources, channels, chats
-- `MenuNavigatePanel` - Navigation between menu pages (in development)
-- `MenuOpenPege` - Opening other interface pages
-- `MenuRadio` - Radio buttons for selecting one of several options
-- `MenuRadioModal` - Modal window with radio buttons
-- `MenuSplit` - Element separator (line break)
-- `MenuSwitch` - Carousel option switch (one button)
+| XML Component | C# Class | Description |
+|---------------|----------|-------------|
+| `<command>` | `MenuCommand` | Button for triggering custom actions |
+| `<open>` | `MenuOpen` | Opening pages, links, or web apps |
+| `<checkbox>` | `MenuCheckbox` | Toggle for enabling/disabling options |
+| `<radio>` | `MenuRadio` | Radio buttons for single selection |
+| `<switch>` | `MenuSwitch` | Carousel option switch (one button) |
+| `<card>` | `MenuCard` | Container with optional pagination |
+| `<navigate>` | `MenuNavigatePanel` | Navigation controls for paginated content |
+| `<row>` | - | Groups components on same row |
+| - | `MenuCheckboxModal` | Modal window with checkboxes |
+| - | `MenuRadioModal` | Modal window with radio buttons |
+| - | `MenuSplit` | Element separator (line break) |
+
+See [Documentation/Components.md](Documentation/Components.md) for detailed component reference.
 
 ## 📦 Nuget
 The Telegram.Bot.UI package is available via [NuGet](https://www.nuget.org/packages/Telegram.Bot.UI)!
@@ -45,7 +54,182 @@ The Telegram.Bot.UI package is available via [NuGet](https://www.nuget.org/packa
 dotnet add package Telegram.Bot.UI
 ```
 
-## 🚀 Getting Started
+## 🚀 Quick Start with Declarative Pages
+
+The easiest way to create bot interfaces is using declarative `.page` files with Vue-like syntax.
+
+### 1. Create a Page File
+
+Create `Resources/Pages/home.page`:
+
+```xml
+<view>
+    <title>Welcome</title>
+    <message>Hello! This is a demo bot.<br/><br/>Choose an option below:</message>
+    <components>
+        <command title="Counter Demo" @click="UI.navigate('counter')" />
+        <open title="Settings" target="settings" />
+        <row>
+            <open type="link" title="GitHub" target="https://github.com" />
+            <open type="link" title="Docs" target="https://example.com/docs" />
+        </row>
+    </components>
+</view>
+```
+
+### 2. Create a Counter Page with ViewModel
+
+Create `Resources/Pages/counter.page`:
+
+```xml
+<view vmodel="CounterViewModel">
+    <title>Counter</title>
+    <message>Count: {{ VModel.Count }}<br/>Status: {{ VModel.GetStatus() }}</message>
+    <components>
+        <row>
+            <command title="➖" @click="decrement()" />
+            <command title="{{ VModel.Count }}" @click="reset()" />
+            <command title="➕" @click="increment()" />
+        </row>
+        <command title="Back" @click="UI.back()" />
+    </components>
+</view>
+
+<script>
+function increment() {
+    VModel.Increment();
+    UI.refresh();
+}
+
+function decrement() {
+    VModel.Decrement();
+    UI.refresh();
+}
+
+function reset() {
+    VModel.Reset();
+    UI.toast('Counter reset!');
+    UI.refresh();
+}
+</script>
+```
+
+### 3. Create the ViewModel
+
+```csharp
+public class CounterViewModel {
+    public int Count { get; set; } = 0;
+
+    public void Increment() => Count++;
+    public void Decrement() => Count--;
+    public void Reset() => Count = 0;
+
+    public string GetStatus() => Count switch {
+        0 => "Zero",
+        > 0 => "Positive",
+        < 0 => "Negative"
+    };
+}
+```
+
+### 4. Setup Program.cs
+
+```csharp
+// Load pages
+var pagesPath = Path.Combine("Resources", "Pages");
+var vmodelAssembly = typeof(CounterViewModel).Assembly;
+var pageManager = new PageManager(pagesPath, vmodelAssembly);
+pageManager.LoadAll();
+
+// Create bot
+var bot = new BotWorkerPulling<MyBotUser>((worker, chatId, client, token) => {
+    return new MyBotUser(pageManager, worker, chatId, client, token);
+}) {
+    botToken = "YOUR_BOT_TOKEN",
+    resourceLoader = new ResourceLoader("Resources")
+};
+
+await bot.StartAsync();
+```
+
+### 5. Handle Commands in BotUser
+
+```csharp
+public class MyBotUser : BaseBotUser {
+    private PageManager pageManager;
+    private Dictionary<string, ScriptPage> pageCache = new();
+
+    public MyBotUser(PageManager pageManager, IBotWorker worker, long chatId,
+        ITelegramBotClient client, CancellationToken token)
+        : base(worker, chatId, client, token) {
+        this.pageManager = pageManager;
+    }
+
+    public override async Task HandleCommandAsync(string cmd, string[] args, Message message) {
+        switch (cmd) {
+            case "start":
+            case "home":
+                var page = GetOrCreatePage("home");
+                if (page != null) await page.SendPageAsync();
+                break;
+            default:
+                // Try to open page by command name
+                var dynamicPage = GetOrCreatePage(cmd);
+                if (dynamicPage != null) await dynamicPage.SendPageAsync();
+                break;
+        }
+    }
+
+    private ScriptPage? GetOrCreatePage(string pageId) {
+        if (pageCache.TryGetValue(pageId, out var cached)) return cached;
+        var page = pageManager.GetPage(pageId, this);
+        if (page != null) pageCache[pageId] = page;
+        return page;
+    }
+}
+```
+
+### Key Concepts
+
+**UI Namespace:**
+All page control functions are in the `UI` namespace:
+```javascript
+UI.navigate('page-id');    // Navigate to page
+UI.refresh();              // Refresh current page
+UI.toast('Message');       // Show notification
+UI.back();                 // Go back
+```
+
+**User Object:**
+Access to BaseBotUser properties and methods:
+```javascript
+User.chatId                           // User's chat ID
+User.localization.code                // Current language
+await User.SendTextMessageAsync('Hi') // Send message
+```
+
+**Base Object:**
+Access to current ScriptPage properties:
+```javascript
+Base.pageId                           // Current page ID
+Base.title                            // Current page title
+Base.parent                           // Parent page reference
+```
+
+### Documentation
+
+**Start Here:**
+- [Documentation/GettingStarted.md](Documentation/GettingStarted.md) - Complete beginner's guide with examples
+
+**Reference:**
+- [Documentation/Components.md](Documentation/Components.md) - All UI components (command, radio, checkbox, etc.)
+- [Documentation/JavaScriptAPI.md](Documentation/JavaScriptAPI.md) - JavaScript API (UI namespace, Base object, lifecycle hooks)
+- [Documentation/ViewModels.md](Documentation/ViewModels.md) - ViewModel integration with C#
+- [Documentation/Pages.md](Documentation/Pages.md) - Page structure, attributes, and configuration
+
+---
+
+## 🚀 Getting Started (C# API)
 
 ### Creating a Bot User Class
 
@@ -122,8 +306,8 @@ var bot = new BotWorkerPulling<MyBotUser>((worker, chatId, client, token) => {
     return new MyBotUser(worker, chatId, client, token);
 }) {
     botToken = "TELEGRAM_BOT_TOKEN",
-    resourcePath = Path.Combine("Resources", "View"),
-    localizationPack = LocalizationPack.FromJson(new FileInfo(Path.Combine("Resources", "Lang", "Lang.json")))
+    resourceLoader = new ResourceLoader("Resources"),
+    localizationPack = LocalizationPack.FromLPack(new FileInfo(Path.Combine("Resources", "Lang.lpack")))
 };
 
 await bot.StartAsync();
@@ -142,8 +326,8 @@ var bot = new BotWorkerWebHook<MyBotUser>((worker, chatId, client, token) => {
     botSecretToken = "WEBHOOK_SECRET_TOKEN",
     botHostAddress = "https://mybot.com",
     botRoute = "TelegramBot/webhook",
-    resourcePath = Path.Combine("Resources", "View"),
-    localizationPack = LocalizationPack.FromJson(new FileInfo(Path.Combine("Resources", "Lang", "Lang.json")))
+    resourceLoader = new ResourceLoader("Resources"),
+    localizationPack = LocalizationPack.FromLPack(new FileInfo(Path.Combine("Resources", "Lang.lpack")))
 };
 
 await bot.StartAsync();
@@ -186,8 +370,8 @@ var bot = new BotWorkerWebHookServer<MyBotUser>((worker, chatId, client, token) 
     botHostAddress = "https://mybot.com",
     port = 80,
     botRoute = "webhook",
-    resourcePath = Path.Combine("Resources", "View"),
-    localizationPack = LocalizationPack.FromJson(new FileInfo(Path.Combine("Resources", "Lang", "Lang.json")))
+    resourceLoader = new ResourceLoader("Resources"),
+    localizationPack = LocalizationPack.FromLPack(new FileInfo(Path.Combine("Resources", "Lang.lpack")))
 };
 
 await bot.StartAsync();
@@ -212,8 +396,8 @@ var bot = new BotWorkerPulling<MyBotUser>((worker, chatId, client, token) => {
     return new MyBotUser(worker, chatId, client, token);
 }) {
     botToken = "TELEGRAM_BOT_TOKEN",
-    resourcePath = Path.Combine("Resources", "View"),
-    localizationPack = LocalizationPack.FromJson(new FileInfo(Path.Combine("Resources", "Lang", "Lang.json"))),
+    resourceLoader = new ResourceLoader("Resources"),
+    localizationPack = LocalizationPack.FromLPack(new FileInfo(Path.Combine("Resources", "Lang.lpack"))),
     logger = loggerFactory.CreateLogger<BotWorkerPulling<MyBotUser>>()
 };
 
@@ -231,7 +415,7 @@ var bot = new BotWorkerPulling<MyBotUser>((worker, chatId, client, token) => {
     return user;
 }) {
     botToken = "TELEGRAM_BOT_TOKEN",
-    resourcePath = Path.Combine("Resources", "View"),
+    resourceLoader = new ResourceLoader("Resources"),
     logger = loggerFactory.CreateLogger<BotWorkerPulling<MyBotUser>>()
 };
 ```
@@ -253,8 +437,8 @@ builder.Services.AddSingleton(serviceProvider => {
         botSecretToken = "WEBHOOK_SECRET_TOKEN",
         botHostAddress = "https://mybot.com",
         botRoute = "TelegramBot/webhook",
-        resourcePath = Path.Combine("Resources", "View"),
-        localizationPack = LocalizationPack.FromJson(new FileInfo(Path.Combine("Resources", "Lang", "Lang.json"))),
+        resourceLoader = new ResourceLoader("Resources"),
+        localizationPack = LocalizationPack.FromLPack(new FileInfo(Path.Combine("Resources", "Lang.lpack"))),
         logger = loggerFactory.CreateLogger<BotWorkerWebHook<MyBotUser>>()
     };
 
@@ -275,199 +459,93 @@ The library logs the following events:
 **BotUser (BaseBotUser):**
 - Custom error handling in `HandleErrorAsync` (your implementation)
 
-## 📄 Creating Interface Pages
+## 📄 Creating Interface Pages (C# MessagePage - Legacy)
 
-The library uses the concept of pages (classes inheriting from `MessagePage`) to represent bot interface elements.
+> **Note:** The `MessagePage` C# API is a legacy approach. For new projects, use declarative `.page` files as shown in the [Quick Start](#-quick-start-with-declarative-pages) section.
 
-### Language Selection Page Example
-
-```csharp
-public class LanguageView : MessagePage {
-    public override string pageResource => "Language"; // There should be a folder with pageResource name in resourcePath (Resources/View/Language)
-    public override string title => $"{flags[botUser.localization.code]} " + "{{ 'Language select' | L }}"; // | L - Built-in localization method
-    private MenuRadio languageRadio;
-    private Dictionary<string, string> flags { get; init; } = new() {
-        ["ru"] = "🇷🇺",
-        ["en"] = "🇺🇸"
-    };
-
-    public LanguageView(BaseBotUser botUser) : base(botUser) {
-        languageRadio = MenuRadio(MenuSelector.FromArray(new[] {
-            ("English", "en"),
-            ("Русский", "ru")
-        }));
-
-        using var context = ((MyBotUser)botUser).Context();
-        var userTable = ((MyBotUser)botUser).GetUserTable(context);
-
-        languageRadio.Select(userTable.language);
-
-        languageRadio.onSelect += select => {
-            using var context = ((MyBotUser)botUser).Context();
-            var userTable = ((MyBotUser)botUser).GetUserTable(context);
-
-            ((MyBotUser)botUser).localization.code = select.id;
-            userTable.language = select.id;
-            context.SaveChanges();
-        };
-    }
-
-    public override string? RequestMessageResource() => $"description-{botUser.localization.code}";
-
-    public override List<ButtonsPage> RequestPageComponents() {
-        return ButtonsPage.Page([
-            [languageRadio]
-        ]);
-    }
-}
-```
-
-### User Agreement Page Example
-
-```csharp
-public class UserAgreementView : MessagePage {
-    public override string pageResource => "UserAgreement";
-    public override string title => "{{ 'User agreement' | L }}";
-    private MenuRadio languageRadio;
-    private MenuCommand acceptCommand;
-
-    public UserAgreementView(BaseBotUser botUser) : base(botUser) {
-        languageRadio = MenuRadio(MenuSelector.FromArray(new[] {
-            ("English", "en"),
-            ("Русский", "ru")
-        }));
-
-        using var context = ((MyBotUser)botUser).Context();
-        var userTable = ((MyBotUser)botUser).GetUserTable(context);
-
-        languageRadio.Select(userTable.language);
-
-        languageRadio.onSelect += select => {
-            using var context = ((MyBotUser)botUser).Context();
-            var userTable = ((MyBotUser)botUser).GetUserTable(context);
-
-            ((MyBotUser)botUser).localization.code = select.id;
-            userTable.language = select.id;
-            context.SaveChanges();
-        };
-
-        acceptCommand = MenuCommand("{{ 'I agree' | L }}");
-        acceptCommand.onClick += async (callbackQueryId, messageId, chatId) => {
-            using var context = ((MyBotUser)botUser).Context();
-            var userTable = ((MyBotUser)botUser).GetUserTable(context);
-
-            userTable.acceptLicense = true;
-            ((MyBotUser)botUser).acceptLicense = true;
-            context.SaveChanges();
-
-            // Delete current page
-            await botUser.DeleteMessageAsync(messageId);
-
-            // Send welcome page after accepting the agreement
-            await ((MyBotUser)botUser).informationView.SendPageAsync();
-        };
-    }
-
-    public override string? RequestMessageResource() => $"description-{botUser.localization.code}";
-
-    public override List<ButtonsPage> RequestPageComponents() {
-        return ButtonsPage.Page([
-            [languageRadio],
-            [acceptCommand]
-        ]);
-    }
-}
-```
-
-### Information Page Example
-
-```csharp
-public class InformationView : MessagePage {
-    public override string pageResource => "Information";
-    public override string title => "{{ 'Information' | L }}";
-
-    public InformationView(BaseBotUser botUser) : base(botUser) { }
-
-    public override string? RequestMessageResource() => $"description-{botUser.localization.code}";
-
-    public override object? RequestModel() => new {
-        me = botUser.chatId // Now can be used in the templating engine
-    };
-
-    public override List<ButtonsPage> RequestPageComponents() {
-        return ButtonsPage.Page([
-            [
-                MenuLink("https://t.me/MyBotSupport", "🆘 {{ 'Support' | L }}"),
-                MenuOpenSubPege(((MyBotUser)botUser).languageView)
-            ]
-        ]);
-    }
-}
-```
+The `MessagePage` class provides programmatic control over bot pages. See the source code for implementation details.
 
 ## Localization
 
-Localization uses a simple JSON format:
+Localization supports two formats: `.lpack` and `.json`.
+
+### LPack Format
+
+Create `Resources/Lang.lpack`:
+
+```
+en: Support
+ru: Поддержка
+
+en: I agree
+ru: Я согласен
+
+en: Language select
+ru: Выбор языка
+
+en: Settings
+ru: Настройки
+```
+
+Each block is separated by an empty line. Each line is `code: text` where `code` is the language code (en, ru, etc.).
+
+### JSON Format
+
+Alternatively, use JSON:
 
 ```json
 [
-  {
-    "en": "Support",
-    "ru": "Поддержка"
-  },
-  {
-    "en": "I agree",
-    "ru": "Я согласен"
-  },
-  {
-    "en": "Language select",
-    "ru": "Выбор языка"
-  },
-  {
-    "en": "Information",
-    "ru": "Информация"
-  },
-  {
-    "en": "User agreement",
-    "ru": "Пользовательское соглашение"
-  }
+  { "en": "Support", "ru": "Поддержка" },
+  { "en": "I agree", "ru": "Я согласен" },
+  { "en": "Language select", "ru": "Выбор языка" },
+  { "en": "Settings", "ru": "Настройки" }
 ]
+```
+
+Load with `LocalizationPack.FromJson()` instead of `FromLPack()`.
+
+In declarative pages, use the `$t()` function:
+
+```xml
+<!-- Using $t() function for localization -->
+<command :title="$t('Save')" />
+
+<!-- In templates -->
+<title>{{ $t('Settings') }}</title>
+
+<!-- Combined with other text -->
+<command :title="'✅ ' + $t('Confirm')" />
 ```
 
 ## 📂 Resource Structure
 
-Resources are organized in folders by page name:
+Resources for declarative pages:
 
 ```
 Resources/
-├── View/
-│   ├── Language/             # pageResource = "Language"
-│   │   ├── text/
-│   │   │   ├── description-en.md
-│   │   │   └── description-ru.md
-│   │   └── image/
-│   │       └── background.png
-│   ├── UserAgreement/        # pageResource = "UserAgreement" 
-│   │   └── text/
-│   │       ├── description-en.md
-│   │       └── description-ru.md
-│   └── Information/          # pageResource = "Information"
-│       └── text/
-│           ├── description-en.md
-│           └── description-ru.md
-└── Lang/
-    └── Lang.json           # File with localizations
+├── Pages/
+│   ├── home.page
+│   ├── settings.page
+│   └── components/
+│       ├── counter.page
+│       └── forms.page
+├── images/
+│   └── banner.png
+├── texts/
+│   ├── welcome-en.md
+│   └── welcome-ru.md
+└── Lang.lpack
 ```
 
-### Resource File Example (description-en.md)
+### Message with External Resource
 
-```markdown
-😎 Hello, {{ me }}!
+```xml
+<view>
+    <title>Welcome</title>
+    <!-- md attribute enables Markdown parsing -->
+    <message md resource="text/welcome-{{ User.localization.code }}"></message>
+</view>
 ```
 
-### Resource File Example (description-ru.md)
-
-```markdown
-😎 Привет, {{ me }}!
-```
+Note: `User` provides access to `BaseBotUser` properties like `localization.code`, `chatId`, etc. `Base` provides access to the current `ScriptPage` instance.
 

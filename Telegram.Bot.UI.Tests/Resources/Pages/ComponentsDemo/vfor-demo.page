@@ -1,0 +1,107 @@
+<view id="vfor-demo" web-preview="false" back-title="« Back">
+    <title>📋 v-for Demo</title>
+
+    <message>
+        <b>v-for Directive</b>
+        <br/><br/>
+        Generate components from arrays at render time.
+        <br/>
+        Users: {{ users.length }}, Tasks: {{ pendingCount }} pending
+    </message>
+
+    <components max-rows="6">
+        <!-- v-for with user objects -->
+        <command v-for="user in users"
+                 title="{{ user.emoji }} {{ user.name }} ({{ user.role }})"
+                 @click="selectUser(user)"></command>
+
+        <!-- v-for with tasks and conditional styling -->
+        <checkbox v-for="task in tasks"
+                  id="{{ 'task-' + task.id }}"
+                  title="{{ task.done ? '✅ ' + task.text : '⬜ ' + task.text }}"
+                  @update="toggleTask(task)"></checkbox>
+
+        <!-- v-for with index -->
+        <command v-for="(color, idx) in colors"
+                 title="{{ (idx + 1) + '. ' + color.name + ' ' + color.hex }}"
+                 @click="selectColor(color, idx)"></command>
+
+        <!-- Actions -->
+        <row>
+            <command id="addUser" title="👤 Add User" columns="2"></command>
+            <command id="addTask" title="📝 Add Task" columns="2"></command>
+        </row>
+
+        <command id="toggleAll" title="🔄 Toggle All Tasks"></command>
+
+        <navigate></navigate>
+    </components>
+
+    <script>
+        var users = [
+            { id: 1, name: 'Alice', role: 'Admin', emoji: '👩‍💼' },
+            { id: 2, name: 'Bob', role: 'User', emoji: '👨‍💻' },
+            { id: 3, name: 'Carol', role: 'Guest', emoji: '👩‍🎨' }
+        ];
+
+        var tasks = [
+            { id: 1, text: 'Setup project', done: true },
+            { id: 2, text: 'Write tests', done: false },
+            { id: 3, text: 'Deploy app', done: false }
+        ];
+
+        var colors = [
+            { name: 'Red', hex: '#FF0000' },
+            { name: 'Green', hex: '#00FF00' },
+            { name: 'Blue', hex: '#0000FF' }
+        ];
+
+        var pendingCount = tasks.filter(function(t) { return !t.done; }).length;
+
+        function selectUser(user) {
+            UI.toast('User: ' + user.emoji + ' ' + user.name + ' (' + user.role + ')');
+        }
+
+        function toggleTask(task) {
+            task.done = !task.done;
+            pendingCount = tasks.filter(function(t) { return !t.done; }).length;
+            UI.toast(task.done ? '✅ Completed: ' + task.text : '⬜ Uncompleted: ' + task.text);
+        }
+
+        function selectColor(color, idx) {
+            UI.toast('Color #' + (idx + 1) + ': ' + color.name + ' (' + color.hex + ')');
+        }
+
+        onMounted(function() {
+            component('addUser').onClick = function() {
+                var names = ['Dan', 'Eve', 'Frank', 'Grace'];
+                var roles = ['Admin', 'User', 'Guest', 'Moderator'];
+                var emojis = ['👨‍🔧', '👩‍🔬', '👨‍🎤', '👩‍🏫'];
+                var idx = users.length % 4;
+                users.push({
+                    id: users.length + 1,
+                    name: names[idx],
+                    role: roles[idx],
+                    emoji: emojis[idx]
+                });
+            };
+
+            component('addTask').onClick = function() {
+                var taskTexts = ['Review code', 'Fix bugs', 'Update docs', 'Refactor'];
+                var idx = tasks.length % taskTexts.length;
+                tasks.push({
+                    id: tasks.length + 1,
+                    text: taskTexts[idx],
+                    done: false
+                });
+                pendingCount = tasks.filter(function(t) { return !t.done; }).length;
+            };
+
+            component('toggleAll').onClick = function() {
+                var allDone = tasks.every(function(t) { return t.done; });
+                tasks.forEach(function(t) { t.done = !allDone; });
+                pendingCount = tasks.filter(function(t) { return !t.done; }).length;
+            };
+        });
+    </script>
+</view>
