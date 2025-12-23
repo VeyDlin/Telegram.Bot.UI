@@ -1,6 +1,5 @@
 using FluentAssertions;
 using Telegram.Bot.UI.Runtime;
-using Xunit;
 
 namespace Telegram.Bot.UI.Tests.Unit;
 

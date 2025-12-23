@@ -1,5 +1,3 @@
-using Telegram.Bot.UI;
-
 namespace Telegram.Bot.UI.Tests.ViewModels;
 
 public class CounterViewModel : IPropsReceiver {

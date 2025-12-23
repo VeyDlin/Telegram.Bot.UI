@@ -1,15 +1,12 @@
 using Localization;
 using Moq;
-using Telegram.Bot;
 using Telegram.Bot.Requests;
 using Telegram.Bot.Requests.Abstractions;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using Telegram.Bot.UI;
 using Telegram.Bot.UI.BotWorker;
+using Telegram.Bot.UI.Loader;
 using Telegram.Bot.UI.Runtime;
-using Telegram.Bot.UI.Services.Loader;
 
 namespace Telegram.Bot.UI.Tests.Mocks;
 

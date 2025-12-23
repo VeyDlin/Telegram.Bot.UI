@@ -1,8 +1,6 @@
 using FluentAssertions;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.UI.TextTags;
 using Telegram.Bot.UI.TextTags.Tags;
-using Xunit;
 
 namespace Telegram.Bot.UI.Tests.E2E;
 
