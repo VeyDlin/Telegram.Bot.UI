@@ -2,7 +2,7 @@
 
 Library for creating Telegram bot interfaces based on [Telegram.Bot](https://github.com/TelegramBots/Telegram.Bot)
 
-Visit the repository with a demo project of a photo editor bot [Telegram.Bot.UI.Demo](https://github.com/VeyDlin/Telegram.Bot.UI.Demo)
+Visit the repository with a demo project of a photo editor bot [Telegram.Bot.UI.Demo](Telegram.Bot.UI.Demo)
 
 [![NuGet](https://img.shields.io/nuget/v/Telegram.Bot.UI.svg)](https://www.nuget.org/packages/Telegram.Bot.UI/)
 [![License](https://img.shields.io/github/license/VeyDlin/Telegram.Bot.UI)](LICENSE)
