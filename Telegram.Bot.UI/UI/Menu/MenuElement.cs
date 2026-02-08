@@ -37,6 +37,12 @@ public abstract class MenuElement : IDisposable {
     public virtual bool hide { get; set; } = false;
 
     /// <summary>
+    /// v-if condition expression to evaluate on each render.
+    /// Null means always visible (no v-if).
+    /// </summary>
+    public virtual string? vIfCondition { get; set; }
+
+    /// <summary>
     /// Maximum number of buttons per row when element generates multiple buttons.
     /// </summary>
     public virtual int columns { get; set; } = 3;

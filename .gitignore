@@ -365,3 +365,6 @@ FodyWeavers.xsd
 # App settings with secrets
 appsettings.json
 !appsettings.template.json
+
+# Auto Claude data directory
+.auto-claude/

@@ -1,0 +1,28 @@
+<view id="radio-pagination-test">
+    <title>Radio Pagination Test</title>
+
+    <script>
+        var items = [
+            { id: '1', name: 'Item 1' },
+            { id: '2', name: 'Item 2' },
+            { id: '3', name: 'Item 3' },
+            { id: '4', name: 'Item 4' },
+            { id: '5', name: 'Item 5' }
+        ];
+        var selected = '1';
+    </script>
+
+    <message>
+        Testing radio pagination
+    </message>
+
+    <components>
+        <radio id="items" columns="1" max-items="3"
+            v-bind-selected="selected"
+            v-on-select="selected = event.select.id;">
+            <option v-for="item in items" :value="item.id" :title="item.name"></option>
+        </radio>
+
+        <navigate target="items"></navigate>
+    </components>
+</view>

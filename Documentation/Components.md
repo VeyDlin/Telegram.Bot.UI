@@ -7,6 +7,7 @@ This document describes all available UI components for declarative `.page` file
 - [command](#command)
 - [open](#open)
 - [checkbox](#checkbox)
+- [checkbox-list](#checkbox-list)
 - [radio](#radio)
 - [switch](#switch)
 - [card](#card)
@@ -137,6 +138,67 @@ cb.onUpdate = function(e) {
 
 ---
 
+## checkbox-list
+
+A multi-select list where multiple options can be toggled on/off.
+
+### Attributes
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `template` | string | `{{ (self.isChecked ? '✅ ' : '') + self.title }}` | Display template |
+| `:selected` | JS expression | - | Binding for selected IDs (comma-separated) |
+| `@update` | JS expression | - | Handler called when selection changes |
+| `id` | string | - | Component ID for JavaScript access |
+| `columns` | number | `1` | Number of columns for button layout |
+| `max-items` | number | - | Maximum items per page (enables pagination with `<navigate>`) |
+| `hide` | boolean | `false` | Hide the checkbox list |
+
+### Child Elements
+
+Options are defined using `<option>` child elements (same as radio).
+
+### Template Variables
+
+The `self` object in templates contains:
+- `self.isChecked` - boolean, whether this option is checked
+- `self.title` - string, the option title
+- `self.index` - number, option index
+
+### Examples
+
+```xml
+<!-- Basic checkbox list -->
+<checkbox-list id="features" @update="onFeatureChange(event)">
+    <option value="dark-mode" title="Dark Mode" />
+    <option value="notifications" title="Notifications" />
+    <option value="auto-save" title="Auto Save" />
+</checkbox-list>
+
+<!-- With binding and pagination -->
+<checkbox-list id="tags" max-items="5" :selected="selectedTags">
+    <option v-for="tag in tags" :value="tag.id" :title="tag.name" />
+</checkbox-list>
+<navigate target="tags" />
+```
+
+### JavaScript API
+
+```javascript
+var list = component('features');
+list.toggle('dark-mode');          // Toggle option
+list.setChecked('notifications', true);  // Set specific state
+console.log(list.IsChecked('dark-mode'));  // Check if selected
+console.log(list.selectedIds);     // Get all selected IDs
+console.log(list.checkedCount);    // Get count of selected
+
+list.onUpdate = function(e) {
+    console.log('Changed:', e.item.id, 'checked:', e.isChecked);
+};
+```
+
+---
+
 ## radio
 
 A group of radio buttons where only one option can be selected.
@@ -149,6 +211,8 @@ A group of radio buttons where only one option can be selected.
 | `:selected` | JS expression | - | Binding for selected option ID |
 | `@select` | JS expression | - | Handler called when selection changes |
 | `id` | string | - | Component ID for JavaScript access |
+| `columns` | number | `1` | Number of columns for button layout |
+| `max-items` | number | - | Maximum items per page (enables pagination with `<navigate>`) |
 | `hide` | boolean | `false` | Hide the radio group |
 
 ### Child Elements
@@ -311,13 +375,13 @@ console.log(card.pageCount);    // Total pages
 
 ## navigate
 
-Navigation controls for paginated cards.
+Navigation controls for paginated components (card, radio, checkbox-list).
 
 ### Attributes
 
 | Attribute | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `target` | string | - | ID of the card to control |
+| `target` | string | - | ID of the paginated component to control |
 | `prevTitle` | string | `◀` | Previous button text |
 | `nextTitle` | string | `▶` | Next button text |
 | `counterTitle` | string | `{{ self.currentPage + 1 }} / {{ self.pageCount }}` | Counter display template |
@@ -327,14 +391,34 @@ Navigation controls for paginated cards.
 | `boundaryMessage` | string | - | Toast message at boundaries |
 | `@click` | JS expression | - | Handler for counter button click |
 
+### Supported Components
+
+Navigate can control any component that supports pagination:
+
+- **card** - with `max-items` or `max-rows` attribute
+- **radio** - with `max-items` attribute
+- **checkbox-list** - with `max-items` attribute
+
 ### Examples
 
 ```xml
-<!-- Basic navigation -->
+<!-- Basic navigation with card -->
 <card id="myList" max-items="5">
     <command v-for="item in items" :title="item.name" />
 </card>
 <navigate target="myList" />
+
+<!-- Navigation with radio -->
+<radio id="language" max-items="5" :selected="lang" @select="lang = event.select.id">
+    <option v-for="l in languages" :value="l.code" :title="l.name" />
+</radio>
+<navigate target="language" />
+
+<!-- Navigation with checkbox-list -->
+<checkbox-list id="features" max-items="4" :selected="selectedFeatures">
+    <option v-for="f in features" :value="f.id" :title="f.name" />
+</checkbox-list>
+<navigate target="features" />
 
 <!-- Custom navigation -->
 <navigate
@@ -347,6 +431,17 @@ Navigation controls for paginated cards.
 
 <!-- Minimal navigation (no counter) -->
 <navigate target="myList" showCounter="false" />
+```
+
+### Navigation in Modals
+
+For `radio-modal` and `checkbox-modal` components, add `<navigate>` inside the modal to customize the built-in pagination. The `target` attribute is ignored (modal manages its own pagination).
+
+```xml
+<radio-modal id="items" maxItems="10" title="Select Item">
+    <option v-for="item in items" :value="item.id" :title="item.name" />
+    <navigate prevTitle="Back" nextTitle="Forward" showCounter="false" />
+</radio-modal>
 ```
 
 ---

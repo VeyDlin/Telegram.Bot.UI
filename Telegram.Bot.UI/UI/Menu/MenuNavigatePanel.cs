@@ -139,29 +139,30 @@ public class MenuNavigatePanel : AutoComponent {
     }
 
     /// <summary>
-    /// Finds the target card component by ID.
+    /// Finds the target paginated component by ID.
     /// </summary>
-    /// <returns>The target MenuCard or null if not found.</returns>
-    private MenuCard? FindTargetCard() {
+    /// <returns>The target IPaginatedComponent or null if not found.</returns>
+    private IPaginatedComponent? FindTargetComponent() {
         if (string.IsNullOrEmpty(target)) {
             return null;
         }
 
         if (scriptContext is not null) {
-            return scriptContext.GetComponent<MenuCard>(target);
+            var component = scriptContext.GetComponent<MenuElement>(target);
+            return component as IPaginatedComponent;
         }
 
         return null;
     }
 
     /// <summary>
-    /// Navigates to a specific page using either card-based or callback-based navigation.
+    /// Navigates to a specific page using either component-based or callback-based navigation.
     /// </summary>
     /// <param name="newPage">The page index to navigate to.</param>
     private async Task NavigateToPageAsync(int newPage) {
-        var targetCard = FindTargetCard();
-        if (targetCard is not null) {
-            targetCard.GoToPage(newPage);
+        var targetComponent = FindTargetComponent();
+        if (targetComponent is not null) {
+            targetComponent.GoToPage(newPage);
             currentPage = newPage;
 
             if (parent.lastMessage is not null) {
@@ -179,10 +180,10 @@ public class MenuNavigatePanel : AutoComponent {
     /// </summary>
     /// <returns>A list of inline keyboard buttons.</returns>
     public override async Task<List<InlineKeyboardButton>> BuildAsync() {
-        var targetCard = FindTargetCard();
-        if (targetCard is not null) {
-            totalPages = targetCard.pageCount;
-            currentPage = targetCard.currentPage;
+        var targetComponent = FindTargetComponent();
+        if (targetComponent is not null) {
+            totalPages = targetComponent.pageCount;
+            currentPage = targetComponent.currentPage;
         }
 
         if (hide || totalPages <= 1) {

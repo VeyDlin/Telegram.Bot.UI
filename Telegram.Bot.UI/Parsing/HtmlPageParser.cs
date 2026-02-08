@@ -1,4 +1,6 @@
+using AngleSharp;
 using AngleSharp.Dom;
+using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using Telegram.Bot.UI.Components;
 
@@ -126,7 +128,10 @@ public class HtmlPageParser {
         if (templates.Count > 0) {
             message.conditions = templates.Select(t => new TemplateCondition {
                 condition = t.GetAttribute("v-if") ?? t.GetAttribute("v-else-if") ?? (t.HasAttribute("v-else") ? "true" : "true"),
-                content = t.InnerHtml.Trim()
+                // HTML5 template elements store content in DocumentFragment (Content property)
+                content = t is IHtmlTemplateElement templateEl
+                    ? templateEl.Content.ToHtml().Trim()
+                    : t.InnerHtml.Trim()
             }).ToList();
             return message;
         }

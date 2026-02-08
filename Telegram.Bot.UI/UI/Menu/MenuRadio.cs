@@ -10,7 +10,7 @@ namespace Telegram.Bot.UI.Menu;
 /// Represents a radio button group menu component where only one option can be selected at a time.
 /// </summary>
 [Component("radio")]
-public class MenuRadio : AutoComponent {
+public class MenuRadio : AutoComponent, IPaginatedComponent {
     /// <summary>
     /// Gets or sets the list of radio button options.
     /// </summary>
@@ -20,6 +20,56 @@ public class MenuRadio : AutoComponent {
     /// Gets the index of the currently selected button. -1 means nothing is selected.
     /// </summary>
     public int selected { get; private set; } = -1;
+
+    /// <summary>
+    /// Gets or sets the maximum items per page for pagination.
+    /// </summary>
+    [Prop("max-items")]
+    public string? maxItemsAttr { get; set; }
+
+    /// <summary>
+    /// Gets the maximum items per page. Null means no pagination.
+    /// </summary>
+    public int? maxItems => GetPropInt(nameof(maxItemsAttr), 0) > 0 ? GetPropInt(nameof(maxItemsAttr), 0) : null;
+
+    /// <summary>
+    /// Gets or sets the current page index for pagination.
+    /// </summary>
+    public int currentPage { get; set; } = 0;
+
+    /// <summary>
+    /// Gets the total number of pages.
+    /// </summary>
+    public int pageCount => maxItems.HasValue && buttons.Count > 0
+        ? (int)Math.Ceiling((double)buttons.Count / maxItems.Value)
+        : 1;
+
+    /// <summary>
+    /// Navigates to a specific page.
+    /// </summary>
+    public void GoToPage(int page) {
+        if (page >= 0 && page < pageCount) {
+            currentPage = page;
+        }
+    }
+
+    /// <summary>
+    /// Gets buttons for the current page with their original indices.
+    /// </summary>
+    private List<(MenuSelector button, int index)> GetPageButtons() {
+        if (!maxItems.HasValue) {
+            return MenuSelector.WithIndex(buttons).ToList();
+        }
+
+        var start = currentPage * maxItems.Value;
+        var count = Math.Min(maxItems.Value, buttons.Count - start);
+
+        return buttons
+            .Select((b, i) => (b, i))
+            .Skip(start)
+            .Take(count)
+            .ToList();
+    }
 
     /// <summary>
     /// Gets the ID of the currently selected button.
@@ -176,7 +226,10 @@ public class MenuRadio : AutoComponent {
 
         var list = new List<InlineKeyboardButton>();
 
-        foreach (var (button, index) in MenuSelector.WithIndex(buttons)) {
+        // Get buttons for current page
+        var pageButtons = GetPageButtons();
+
+        foreach (var (button, index) in pageButtons) {
             var callbackId = botUser.callbackFactory.Subscribe(botUser.chatId, async (callbackQueryId, messageId, chatId) => {
                 lock (selectedLock) {
                     selected = index;

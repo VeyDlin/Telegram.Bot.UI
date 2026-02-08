@@ -126,6 +126,25 @@ public class MenuCheckboxModal : AutoComponent {
             maxItems = maxItems,
             maxRows = maxRows
         };
+
+        // Parse <navigate> element for custom navigation settings
+        var navigateElement = element.QuerySelector(":scope > navigate");
+        if (navigateElement is not null) {
+            modalPage.navigatePrevTitle = navigateElement.GetAttribute("prevTitle");
+            modalPage.navigateNextTitle = navigateElement.GetAttribute("nextTitle");
+            modalPage.navigateCounterTitle = navigateElement.GetAttribute("counterTitle");
+            modalPage.navigateBoundaryMessage = navigateElement.GetAttribute("boundaryMessage");
+
+            if (bool.TryParse(navigateElement.GetAttribute("showCounter"), out var showCounter)) {
+                modalPage.navigateShowCounter = showCounter;
+            }
+            if (bool.TryParse(navigateElement.GetAttribute("carousel"), out var carousel)) {
+                modalPage.navigateCarousel = carousel;
+            }
+            if (bool.TryParse(navigateElement.GetAttribute("hideBoundary"), out var hideBoundary)) {
+                modalPage.navigateHideBoundary = hideBoundary;
+            }
+        }
     }
 
 

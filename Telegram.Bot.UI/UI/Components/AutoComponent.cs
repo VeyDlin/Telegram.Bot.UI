@@ -209,6 +209,7 @@ public abstract class AutoComponent : MenuElement {
 
     /// <summary>
     /// Gets the raw property value without rendering templates.
+    /// Bindings are returned as {{ expr }} for deferred evaluation.
     /// </summary>
     /// <param name="propName">The property name.</param>
     /// <param name="defaultValue">The default value if the property is not set.</param>
@@ -218,8 +219,9 @@ public abstract class AutoComponent : MenuElement {
             return frozen;
         }
 
+        // Return binding as template for deferred evaluation
         if (bindings.TryGetValue(propName, out var binding)) {
-            return evaluate(binding);
+            return "{{ " + binding + " }}";
         }
 
         // Check templates (values from parsing, may contain {{ }})

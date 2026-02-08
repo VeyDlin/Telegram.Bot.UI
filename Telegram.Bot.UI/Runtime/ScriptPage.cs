@@ -409,6 +409,7 @@ public class ScriptPage : MessagePage {
 
             if (menuPages.Count > 0) {
                 var currentPageComponents = menuPages[currentPageIndex];
+                EvaluateVIfConditions(currentPageComponents);
                 var visibleComponents = currentPageComponents.Where(c => !c.hide).ToList();
                 var rows = visibleComponents
                     .GroupBy(c => c.rowIndex)
@@ -428,6 +429,7 @@ public class ScriptPage : MessagePage {
 
                 allPages.Add(rows.ToArray());
             } else {
+                EvaluateVIfConditions(components);
                 var expandedComponents = ExpandComponents(components);
                 var visibleComponents = expandedComponents.Where(c => !c.hide).ToList();
                 if (visibleComponents.Count == 0 && navigateComponent is null) {
@@ -447,6 +449,23 @@ public class ScriptPage : MessagePage {
         } catch (Exception ex) {
             logger.LogError(ex, "[ScriptPage] RequestPageComponentsAsync failed");
             throw;
+        }
+    }
+
+    /// <summary>
+    /// Evaluates v-if conditions on all components and updates their hide property.
+    /// </summary>
+    private void EvaluateVIfConditions(List<MenuElement> componentList) {
+        foreach (var component in componentList) {
+            if (component.vIfCondition is not null) {
+                try {
+                    var result = context.Evaluate<bool>(component.vIfCondition);
+                    component.hide = !result;
+                } catch (Exception ex) {
+                    logger.LogWarning(ex, "[ScriptPage] Failed to evaluate v-if condition: {Condition}", component.vIfCondition);
+                    component.hide = true;
+                }
+            }
         }
     }
 

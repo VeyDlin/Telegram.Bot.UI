@@ -11,7 +11,7 @@
         </row>
 
         <row>
-            <link id="supportLink" :title="'🆘 ' + $t('Support')" url="https://t.me/BotFather" columns="2"></link>
+            <open id="supportLink" type="link" :title="'🆘 ' + $t('Support')" target="https://t.me/BotFather" columns="2"></open>
             <command id="aboutBtn" :title="'ℹ️ ' + $t('About')" columns="2"></command>
         </row>
     </components>

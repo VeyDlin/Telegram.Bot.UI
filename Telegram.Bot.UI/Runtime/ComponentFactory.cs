@@ -41,27 +41,13 @@ public class ComponentFactory {
 
     /// <summary>
     /// Expand components with v-for and v-if directives
-    /// Returns multiple components for v-for, filters by v-if condition
+    /// Returns multiple components for v-for, stores v-if condition for runtime evaluation
     /// </summary>
     public async Task<List<MenuElement>> ExpandAndCreateAsync(List<ComponentDefinition> compDefs) {
         var result = new List<MenuElement>();
-        bool previousIfWasTrue = false;
 
         foreach (var compDef in compDefs) {
             if (compDef is HtmlComponentDefinition html) {
-                // Handle v-if / v-else-if / v-else
-                if (html.vIf is not null) {
-                    bool shouldRender = EvaluateVIf(html.vIf, previousIfWasTrue);
-                    previousIfWasTrue = html.vIf.type == VIfType.If ? shouldRender : previousIfWasTrue;
-
-                    if (!shouldRender) {
-                        continue;
-                    }
-                } else {
-                    // Reset if chain when no v-if directive
-                    previousIfWasTrue = false;
-                }
-
                 // Handle v-for
                 if (html.vFor is not null) {
                     var expandedComponents = await ExpandVForAsync(html);
@@ -69,12 +55,15 @@ public class ComponentFactory {
                 } else {
                     var component = await CreateFromHtmlAsync(html, compDef);
                     if (component is not null) {
+                        // Store v-if condition for runtime evaluation
+                        if (html.vIf is not null) {
+                            component.vIfCondition = BuildVIfConditionExpression(html.vIf, compDefs, compDef);
+                        }
                         result.Add(component);
                     }
                 }
             } else {
                 // Other component types
-                previousIfWasTrue = false;
                 var component = await CreateAsync(compDef);
                 if (component is not null) {
                     result.Add(component);
@@ -85,29 +74,56 @@ public class ComponentFactory {
         return result;
     }
 
-
-    private bool EvaluateVIf(VIfDirective vIf, bool previousIfWasTrue) {
+    /// <summary>
+    /// Builds a JavaScript expression that evaluates the v-if chain correctly.
+    /// For v-else-if and v-else, we need to check that all previous conditions in the chain were false.
+    /// </summary>
+    private string? BuildVIfConditionExpression(VIfDirective vIf, List<ComponentDefinition> allDefs, ComponentDefinition currentDef) {
         switch (vIf.type) {
             case VIfType.If:
-            return EvaluateCondition(vIf.condition!);
+                return vIf.condition;
 
             case VIfType.ElseIf:
-            if (previousIfWasTrue) {
-                return false;  // Previous if/else-if was true, skip this
-            }
-            return EvaluateCondition(vIf.condition!);
-
             case VIfType.Else:
-            return !previousIfWasTrue;  // Render only if all previous conditions were false
+                // Find all preceding v-if/v-else-if conditions in the chain
+                var precedingConditions = new List<string>();
+                foreach (var def in allDefs) {
+                    if (def == currentDef) break;
+
+                    if (def is HtmlComponentDefinition htmlDef && htmlDef.vIf is not null) {
+                        if (htmlDef.vIf.type == VIfType.If) {
+                            // New chain started, clear previous conditions
+                            precedingConditions.Clear();
+                            precedingConditions.Add(htmlDef.vIf.condition!);
+                        } else if (htmlDef.vIf.type == VIfType.ElseIf) {
+                            precedingConditions.Add(htmlDef.vIf.condition!);
+                        }
+                        // v-else doesn't add a condition, it terminates the chain
+                    } else {
+                        // Non-v-if element breaks the chain
+                        precedingConditions.Clear();
+                    }
+                }
+
+                if (precedingConditions.Count == 0) {
+                    // No preceding conditions found - invalid v-else-if/v-else
+                    return vIf.type == VIfType.Else ? "true" : vIf.condition;
+                }
+
+                // Build expression: !(cond1) && !(cond2) && ... && (this condition if v-else-if)
+                var negatedConditions = precedingConditions.Select(c => $"!({c})");
+                var allPrecedingFalse = string.Join(" && ", negatedConditions);
+
+                if (vIf.type == VIfType.Else) {
+                    return allPrecedingFalse;
+                } else {
+                    // v-else-if: all preceding false AND this condition true
+                    return $"({allPrecedingFalse}) && ({vIf.condition})";
+                }
 
             default:
-            return true;
+                return null;
         }
-    }
-
-
-    private bool EvaluateCondition(string condition) {
-        return context.Evaluate<bool>(condition);
     }
 
 
@@ -155,6 +171,11 @@ public class ComponentFactory {
                 if (component is AutoComponent autoComp) {
                     var indexName = vFor.indexName ?? "index";
                     autoComp.FreezeProps(vFor.itemName, item, indexName, index);
+                }
+
+                // Store v-if condition for runtime evaluation
+                if (html.vIf is not null && html.vIf.type == VIfType.If) {
+                    component.vIfCondition = html.vIf.condition;
                 }
 
                 // Each v-for item gets its own row

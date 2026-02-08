@@ -55,7 +55,7 @@ public class DemoFlowTests : ComprehensiveTestBase {
 
         var expectedButtons = new[] {
             new[] { "🎮 UI Components", "🌐 Language" },
-            new[] { "ℹ️ About" }
+            new[] { "🆘 Support", "ℹ️ About" }
         };
 
         Verify(expectedText, expectedButtons, "Home page");

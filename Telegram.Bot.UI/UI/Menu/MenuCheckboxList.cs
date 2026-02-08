@@ -13,7 +13,7 @@ namespace Telegram.Bot.UI.Menu;
 /// Similar to MenuRadio but allows multiple selections.
 /// </summary>
 [Component("checkbox-list")]
-public class MenuCheckboxList : AutoComponent {
+public class MenuCheckboxList : AutoComponent, IPaginatedComponent {
     public List<MenuSelector> buttons { get; set; } = [];
     private HashSet<string> checkedIds = new();
     public List<string> callbackIdList = new();
@@ -29,6 +29,38 @@ public class MenuCheckboxList : AutoComponent {
 
     [Prop("template")]
     public string template { get; set; } = "{{ (self.isChecked ? '✅ ' : '') + self.title }}";
+
+    [Prop("max-items")]
+    public string? maxItemsAttr { get; set; }
+
+    public int? maxItems => GetPropInt(nameof(maxItemsAttr), 0) > 0 ? GetPropInt(nameof(maxItemsAttr), 0) : null;
+
+    public int currentPage { get; set; } = 0;
+
+    public int pageCount => maxItems.HasValue && buttons.Count > 0
+        ? (int)Math.Ceiling((double)buttons.Count / maxItems.Value)
+        : 1;
+
+    public void GoToPage(int page) {
+        if (page >= 0 && page < pageCount) {
+            currentPage = page;
+        }
+    }
+
+    private List<(MenuSelector button, int index)> GetPageButtons() {
+        if (!maxItems.HasValue) {
+            return MenuSelector.WithIndex(buttons).ToList();
+        }
+
+        var start = currentPage * maxItems.Value;
+        var count = Math.Min(maxItems.Value, buttons.Count - start);
+
+        return buttons
+            .Select((b, i) => (b, i))
+            .Skip(start)
+            .Take(count)
+            .ToList();
+    }
 
     [Bind("selected")]
     public string? selectedBinding { get; set; }
@@ -174,7 +206,9 @@ public class MenuCheckboxList : AutoComponent {
 
         var list = new List<InlineKeyboardButton>();
 
-        foreach (var (button, index) in MenuSelector.WithIndex(buttons)) {
+        var pageButtons = GetPageButtons();
+
+        foreach (var (button, index) in pageButtons) {
             var buttonId = button.id; // Capture for closure
             var callbackId = botUser.callbackFactory.Subscribe(botUser.chatId, async (callbackQueryId, messageId, chatId) => {
                 bool newState;

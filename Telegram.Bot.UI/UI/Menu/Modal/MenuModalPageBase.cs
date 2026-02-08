@@ -35,6 +35,15 @@ public abstract class MenuModalPageBase : MessagePage {
     public int? maxItems { get; set; }
     public int? maxRows { get; set; }
 
+    // Navigate panel customization
+    public string? navigatePrevTitle { get; set; }
+    public string? navigateNextTitle { get; set; }
+    public string? navigateCounterTitle { get; set; }
+    public bool? navigateShowCounter { get; set; }
+    public bool? navigateCarousel { get; set; }
+    public bool? navigateHideBoundary { get; set; }
+    public string? navigateBoundaryMessage { get; set; }
+
     public override string? pageResource => GetCurrentDetails()?.pageResource ?? parent?.pageResource;
 
     // Modal's parent is the ScriptPage (Base), so use Base.title
@@ -268,6 +277,29 @@ public abstract class MenuModalPageBase : MessagePage {
                     }
                 }
             };
+
+            // Apply custom navigate settings if provided
+            if (navigatePrevTitle is not null) {
+                navigatePanel.prevTitleAttr = navigatePrevTitle;
+            }
+            if (navigateNextTitle is not null) {
+                navigatePanel.nextTitleAttr = navigateNextTitle;
+            }
+            if (navigateCounterTitle is not null) {
+                navigatePanel.counterTitleAttr = navigateCounterTitle;
+            }
+            if (navigateShowCounter.HasValue) {
+                navigatePanel.showCounterAttr = navigateShowCounter.Value.ToString().ToLower();
+            }
+            if (navigateCarousel.HasValue) {
+                navigatePanel.carouselAttr = navigateCarousel.Value.ToString().ToLower();
+            }
+            if (navigateHideBoundary.HasValue) {
+                navigatePanel.hideBoundaryAttr = navigateHideBoundary.Value.ToString().ToLower();
+            }
+            if (navigateBoundaryMessage is not null) {
+                navigatePanel.boundaryMessageAttr = navigateBoundaryMessage;
+            }
         }
 
         if (navigatePanel is not null) {

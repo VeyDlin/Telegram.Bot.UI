@@ -10,7 +10,7 @@ namespace Telegram.Bot.UI.Menu;
 /// Represents a card component that displays menu elements with optional pagination support.
 /// </summary>
 [Component("card")]
-public class MenuCard : AutoComponent {
+public class MenuCard : AutoComponent, IPaginatedComponent {
     /// <summary>
     /// Gets or sets the maximum number of items per page attribute.
     /// </summary>

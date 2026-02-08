@@ -98,7 +98,7 @@ function start() {
 </script>
 ```
 
-> **Note:** HTML mode is used by default. Use `<br/>` for line breaks in messages.
+> **Note:** HTML mode is used by default. Use `<br/>` for line breaks or `<p>content</p>` for paragraphs.
 
 ### Page with ViewModel
 
