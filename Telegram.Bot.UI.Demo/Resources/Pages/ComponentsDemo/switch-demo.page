@@ -12,32 +12,32 @@
     <components>
         <!-- Theme switch - cycles through themes -->
         <switch id="theme" title="Theme: {{ self.title }}">
-            <option value="light" title="☀️ Light"></option>
-            <option value="dark" title="🌙 Dark"></option>
-            <option value="auto" title="🔄 Auto"></option>
+            <option value="light" title="☀️ Light" />
+            <option value="dark" title="🌙 Dark" />
+            <option value="auto" title="🔄 Auto" />
         </switch>
 
         <!-- Quality switch - cycles through quality levels -->
         <switch id="quality" title="Quality: {{ self.title }}">
-            <option value="low" title="Low"></option>
-            <option value="medium" title="Medium"></option>
-            <option value="high" title="High"></option>
-            <option value="ultra" title="Ultra"></option>
+            <option value="low" title="Low" />
+            <option value="medium" title="Medium" />
+            <option value="high" title="High" />
+            <option value="ultra" title="Ultra" />
         </switch>
 
         <!-- Language switch -->
         <switch id="language" title="{{ self.title }}">
-            <option value="en" title="🇺🇸 English"></option>
-            <option value="ru" title="🇷🇺 Russian"></option>
-            <option value="de" title="🇩🇪 Deutsch"></option>
+            <option value="en" title="🇺🇸 English" />
+            <option value="ru" title="🇷🇺 Russian" />
+            <option value="de" title="🇩🇪 Deutsch" />
         </switch>
 
         <!-- Status switch with index display -->
         <switch id="status" title="Status {{ self.index + 1 }}/{{ self.count }}: {{ self.title }}">
-            <option value="idle" title="⏸️ Idle"></option>
-            <option value="running" title="▶️ Running"></option>
-            <option value="paused" title="⏯️ Paused"></option>
-            <option value="stopped" title="⏹️ Stopped"></option>
+            <option value="idle" title="⏸️ Idle" />
+            <option value="running" title="▶️ Running" />
+            <option value="paused" title="⏯️ Paused" />
+            <option value="stopped" title="⏹️ Stopped" />
         </switch>
     </components>
 

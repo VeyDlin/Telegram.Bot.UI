@@ -216,12 +216,12 @@ public class MenuSwitch : AutoComponent {
             return new();
         }
 
-        return new() {
+        return ApplyButtonVariant(new() {
             InlineKeyboardButton.WithCallbackData(
                 text: displayTitle,
                 callbackData: callbackId
             )
-        };
+        });
     }
 
     /// <summary>

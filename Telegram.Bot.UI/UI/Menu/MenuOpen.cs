@@ -95,13 +95,13 @@ public class MenuOpen : AutoComponent {
 
         switch (type) {
             case OpenType.Link:
-            return [InlineKeyboardButton.WithUrl(displayTitle, targetValue)];
+            return ApplyButtonVariant([InlineKeyboardButton.WithUrl(displayTitle, targetValue)]);
 
             case OpenType.WebApp:
-            return [InlineKeyboardButton.WithWebApp(
+            return ApplyButtonVariant([InlineKeyboardButton.WithWebApp(
                     text: displayTitle,
                     webApp: targetValue
-                )];
+                )]);
 
             case OpenType.Page:
             default:
@@ -113,7 +113,7 @@ public class MenuOpen : AutoComponent {
                     await scriptPage.NavigateToAsync(targetValue, subPage);
                 }
             });
-            return [InlineKeyboardButton.WithCallbackData(displayTitle, callbackId)];
+            return ApplyButtonVariant([InlineKeyboardButton.WithCallbackData(displayTitle, callbackId)]);
         }
     }
 }

@@ -88,7 +88,9 @@ public class ComponentFactory {
                 // Find all preceding v-if/v-else-if conditions in the chain
                 var precedingConditions = new List<string>();
                 foreach (var def in allDefs) {
-                    if (def == currentDef) break;
+                    if (def == currentDef) {
+                        break;
+                    }
 
                     if (def is HtmlComponentDefinition htmlDef && htmlDef.vIf is not null) {
                         if (htmlDef.vIf.type == VIfType.If) {

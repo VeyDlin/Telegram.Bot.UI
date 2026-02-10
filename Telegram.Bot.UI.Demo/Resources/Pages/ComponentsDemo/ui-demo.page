@@ -11,69 +11,73 @@
 
     <components max-rows="6">
         <!-- Page 1: Basic Controls -->
-        <checkbox id="demoCheckbox" title="{{ self.isSelected ? '✅ Checkbox: ON' : '☐ Checkbox: OFF' }}"></checkbox>
+        <checkbox id="demoCheckbox" title="{{ self.isSelected ? '✅ Checkbox: ON' : '☐ Checkbox: OFF' }}" />
 
         <!-- Switch is a carousel - cycles through options on click -->
         <switch id="demoSwitch" title="🔀 {{ self.title }}">
-            <option value="low" title="Low"></option>
-            <option value="medium" title="Medium"></option>
-            <option value="high" title="High"></option>
+            <option value="low" title="Low" />
+            <option value="medium" title="Medium" />
+            <option value="high" title="High" />
         </switch>
 
         <radio id="demoRadio">
-            <option value="opt1" title="🔘 Option A"></option>
-            <option value="opt2" title="🔘 Option B"></option>
+            <option value="opt1" title="🔘 Option A" />
+            <option value="opt2" title="🔘 Option B" />
         </radio>
 
         <row>
-            <open id="checkboxPage" title="📦 Checkbox Demo" target="checkbox-demo" columns="2"></open>
-            <open id="radioPage" title="🔘 Radio Demo" target="radio-demo" columns="2"></open>
+            <open id="checkboxPage" title="📦 Checkbox Demo" target="checkbox-demo" columns="2" />
+            <open id="radioPage" title="🔘 Radio Demo" target="radio-demo" columns="2" />
         </row>
 
         <row>
-            <open id="switchPage" title="🔀 Switch Demo" target="switch-demo" columns="2"></open>
-            <open id="cardPage" title="🃏 Card/List Demo" target="card-demo" columns="2"></open>
+            <open id="switchPage" title="🔀 Switch Demo" target="switch-demo" columns="2" />
+            <open id="cardPage" title="🃏 Card/List Demo" target="card-demo" columns="2" />
         </row>
 
         <!-- Page 2: Advanced Examples -->
         <row>
-            <open id="commandPage" title="⚡ Command Demo" target="command-demo" columns="2"></open>
-            <open id="settingsPage" title="⚙️ Settings Example" target="settings-demo" columns="2"></open>
+            <open id="commandPage" title="⚡ Command Demo" target="command-demo" columns="2" />
+            <open id="settingsPage" title="⚙️ Settings Example" target="settings-demo" columns="2" />
         </row>
 
         <row>
-            <open id="autoPage" title="🔄 Auto-generation" target="auto-demo" columns="2"></open>
-            <open id="vforPage" title="📋 v-for Demo" target="vfor-demo" columns="2"></open>
+            <open id="autoPage" title="🔄 Auto-generation" target="auto-demo" columns="2" />
+            <open id="vforPage" title="📋 v-for Demo" target="vfor-demo" columns="2" />
         </row>
 
         <row>
-            <open id="notifyPage" title="📢 Notifications" target="notify-demo" columns="2"></open>
-            <open id="propsTest" title="🔗 Props Test" target="props-test" columns="2"></open>
+            <open id="notifyPage" title="📢 Notifications" target="notify-demo" columns="2" />
+            <open id="propsTest" title="🔗 Props Test" target="props-test" columns="2" />
         </row>
 
         <row>
-            <open id="viewmodelDemo" title="⚙️ ViewModel Demo" target="viewmodel-demo" columns="2"></open>
-            <open id="viewmodelPropsPage" title="🔗 ViewModel Props" target="viewmodel-props" columns="2"></open>
+            <open id="viewmodelDemo" title="⚙️ ViewModel Demo" target="viewmodel-demo" columns="2" />
+            <open id="viewmodelPropsPage" title="🔗 ViewModel Props" target="viewmodel-props" columns="2" />
         </row>
 
         <row>
-            <command id="photoBtn" title="🖼️ Photo Demo" columns="2"></command>
-            <command id="docBtn" title="📄 Document Demo" columns="2"></command>
+            <command id="photoBtn" title="🖼️ Photo Demo" columns="2" />
+            <command id="docBtn" title="📄 Document Demo" columns="2" />
         </row>
 
         <row>
-            <open id="freshDemo" title="✨ Fresh Demo" target="fresh-demo" columns="2"></open>
-            <command id="infoBtn" title="ℹ️ Show Info" columns="2"></command>
+            <open id="freshDemo" title="✨ Fresh Demo" target="fresh-demo" columns="2" />
+            <command id="infoBtn" title="ℹ️ Show Info" columns="2" />
         </row>
 
         <!-- Modal Demo Pages -->
         <row>
-            <open id="radioModalDemo" title="🔘 Radio Modal" target="radio-modal-demo" columns="2"></open>
-            <open id="checkboxModalDemo" title="☑️ Checkbox Modal" target="checkbox-modal-demo" columns="2"></open>
+            <open id="radioModalDemo" title="🔘 Radio Modal" target="radio-modal-demo" columns="2" />
+            <open id="checkboxModalDemo" title="☑️ Checkbox Modal" target="checkbox-modal-demo" columns="2" />
+        </row>
+
+        <row>
+            <open id="variantDemo" title="🎨 Variant Demo" target="variant-demo" columns="2" />
         </row>
 
         <!-- Navigation -->
-        <navigate prevTitle="◀ Prev" nextTitle="Next ▶" counterTitle="Page {{ self.currentPage + 1 }}/{{ self.pageCount }}"></navigate>
+        <navigate prevTitle="◀ Prev" nextTitle="Next ▶" counterTitle="Page {{ self.currentPage + 1 }}/{{ self.pageCount }}" />
     </components>
 
     <script>

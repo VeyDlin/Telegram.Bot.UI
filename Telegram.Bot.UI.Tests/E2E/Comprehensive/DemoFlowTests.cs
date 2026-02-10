@@ -84,7 +84,7 @@ public class DemoFlowTests : ComprehensiveTestBase {
             new[] { "📦 Checkbox Demo", "🔘 Radio Demo" },
             new[] { "🔀 Switch Demo", "🃏 Card/List Demo" },
             new[] { "⚡ Command Demo", "⚙️ Settings Example" },
-            new[] { "◀ Prev", "Page 1/2", "Next ▶" },
+            new[] { "◀ Prev", "Page 1/3", "Next ▶" },
             new[] { "« Back" }
         };
 
@@ -112,7 +112,7 @@ public class DemoFlowTests : ComprehensiveTestBase {
             new[] { "🖼️ Photo Demo", "📄 Document Demo" },
             new[] { "✨ Fresh Demo", "ℹ️ Show Info" },
             new[] { "🔘 Radio Modal", "☑️ Checkbox Modal" },
-            new[] { "◀ Prev", "Page 2/2", "Next ▶" },
+            new[] { "◀ Prev", "Page 2/3", "Next ▶" },
             new[] { "« Back" }
         };
 
@@ -195,12 +195,12 @@ public class DemoFlowTests : ComprehensiveTestBase {
         // On page 1 - go to page 2
         await ClickButtonAsync("Next ▶");
         VerifyNoErrors("Next should work");
-        GetCurrentButtons()[6].Should().Contain("Page 2/2");
+        GetCurrentButtons()[6].Should().Contain("Page 2/3");
 
         // Go back to page 1
         await ClickButtonAsync("◀ Prev");
         VerifyNoErrors("Prev should work");
-        GetCurrentButtons()[6].Should().Contain("Page 1/2");
+        GetCurrentButtons()[6].Should().Contain("Page 1/3");
     }
 
     #endregion

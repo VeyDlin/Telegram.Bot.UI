@@ -12,11 +12,11 @@
     </message>
 
     <components>
-        <command v-if="showBtn1" title="BTN1" @click="UI.toast('1')"></command>
-        <command v-if="showBtn2" title="BTN2" @click="UI.toast('2')"></command>
-        <command v-if="showBtn3" title="BTN3" @click="UI.toast('3')"></command>
-        <command title="Toggle1" @click="showBtn1 = !showBtn1; UI.refresh();"></command>
-        <command title="Toggle2" @click="showBtn2 = !showBtn2; UI.refresh();"></command>
-        <command title="Toggle3" @click="showBtn3 = !showBtn3; UI.refresh();"></command>
+        <command v-if="showBtn1" title="BTN1" @click="UI.toast('1')" />
+        <command v-if="showBtn2" title="BTN2" @click="UI.toast('2')" />
+        <command v-if="showBtn3" title="BTN3" @click="UI.toast('3')" />
+        <command title="Toggle1" @click="showBtn1 = !showBtn1; UI.refresh();" />
+        <command title="Toggle2" @click="showBtn2 = !showBtn2; UI.refresh();" />
+        <command title="Toggle3" @click="showBtn3 = !showBtn3; UI.refresh();" />
     </components>
 </view>

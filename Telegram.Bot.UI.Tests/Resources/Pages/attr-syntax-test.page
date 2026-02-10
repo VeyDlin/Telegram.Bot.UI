@@ -8,18 +8,18 @@
     <components>
         <!-- Test 1: template literal with mustache inside -->
         <radio id="radio1" template="[{{ self.title }}]">
-            <option value="a" title="Option A"></option>
+            <option value="a" title="Option A" />
         </radio>
 
         <!-- Test 2: :template binding (should work the same as template) -->
         <radio id="radio2" :template="'[' + self.title + ']'">
-            <option value="b" title="Option B"></option>
+            <option value="b" title="Option B" />
         </radio>
 
         <!-- Test 3: title literal -->
-        <command title="Test Button"></command>
+        <command title="Test Button" />
 
         <!-- Test 4: :title binding (should work the same as title) -->
-        <command :title="'Test Button'"></command>
+        <command :title="'Test Button'" />
     </components>
 </view>

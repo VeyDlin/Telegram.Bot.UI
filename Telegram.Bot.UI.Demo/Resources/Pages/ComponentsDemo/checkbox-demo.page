@@ -11,23 +11,23 @@
 
     <components>
         <!-- Basic checkbox -->
-        <checkbox id="basic" title="Basic Checkbox" v-bind-selected="isEnabled"></checkbox>
+        <checkbox id="basic" title="Basic Checkbox" v-bind-selected="isEnabled" />
 
         <!-- Checkbox with dynamic title -->
-        <checkbox id="dynamic" title="{{ self.isSelected ? '✅ Active' : '❌ Inactive' }}"></checkbox>
+        <checkbox id="dynamic" title="{{ self.isSelected ? '✅ Active' : '❌ Inactive' }}" />
 
         <!-- Checkbox with emoji states -->
-        <checkbox id="emoji" title="{{ self.isSelected ? '🌟 Favorite' : '☆ Add to favorites' }}"></checkbox>
+        <checkbox id="emoji" title="{{ self.isSelected ? '🌟 Favorite' : '☆ Add to favorites' }}" />
 
         <!-- Row of checkboxes -->
         <row>
-            <checkbox id="opt1" title="Option A" columns="2"></checkbox>
-            <checkbox id="opt2" title="Option B" columns="2"></checkbox>
+            <checkbox id="opt1" title="Option A" columns="2" />
+            <checkbox id="opt2" title="Option B" columns="2" />
         </row>
 
         <row>
-            <checkbox id="opt3" title="Option C" columns="2"></checkbox>
-            <checkbox id="opt4" title="Option D" columns="2"></checkbox>
+            <checkbox id="opt3" title="Option C" columns="2" />
+            <checkbox id="opt4" title="Option D" columns="2" />
         </row>
     </components>
 

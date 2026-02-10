@@ -254,6 +254,6 @@ public class MenuNavigatePanel : AutoComponent {
             buttons.Add(InlineKeyboardButton.WithCallbackData(render(nextTitle), nextCallbackId));
         }
 
-        return buttons;
+        return ApplyButtonVariant(buttons);
     }
 }

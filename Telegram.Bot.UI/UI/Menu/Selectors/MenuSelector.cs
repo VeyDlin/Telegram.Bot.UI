@@ -1,3 +1,5 @@
+using Telegram.Bot.Types.ReplyMarkups;
+
 namespace Telegram.Bot.UI.Menu.Selectors;
 
 /// <summary>
@@ -14,6 +16,16 @@ public class MenuSelector {
     /// Gets or sets the unique identifier for the menu option.
     /// </summary>
     public required string id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the button style variant for this option.
+    /// </summary>
+    public KeyboardButtonStyle? variant { get; set; }
+
+    /// <summary>
+    /// Gets or sets the custom emoji icon ID for this option.
+    /// </summary>
+    public string? icon { get; set; }
 
     /// <summary>
     /// Creates a list of MenuSelector objects from an enumerable of title-id tuples.

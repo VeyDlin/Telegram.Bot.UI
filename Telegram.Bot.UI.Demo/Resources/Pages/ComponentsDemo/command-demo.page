@@ -11,29 +11,29 @@
 
     <components>
         <!-- Basic command -->
-        <command id="clickMe" title="👆 Click Me!"></command>
+        <command id="clickMe" title="👆 Click Me!" />
 
         <!-- Commands in a row -->
         <row>
-            <command id="like" title="👍 Like" columns="2"></command>
-            <command id="dislike" title="👎 Dislike" columns="2"></command>
+            <command id="like" title="👍 Like" columns="2" />
+            <command id="dislike" title="👎 Dislike" columns="2" />
         </row>
 
         <!-- Action commands -->
         <row>
-            <command id="save" title="💾 Save" columns="2"></command>
-            <command id="delete" title="🗑️ Delete" columns="2"></command>
+            <command id="save" title="💾 Save" columns="2" />
+            <command id="delete" title="🗑️ Delete" columns="2" />
         </row>
 
         <!-- Counter example -->
         <row>
-            <command id="minus" title="➖" columns="3"></command>
-            <command id="counter" title="{{ counter }}"></command>
-            <command id="plus" title="➕" columns="3"></command>
+            <command id="minus" title="➖" columns="3" />
+            <command id="counter" title="{{ counter }}" />
+            <command id="plus" title="➕" columns="3" />
         </row>
 
         <!-- Reset -->
-        <command id="reset" title="🔄 Reset Counter"></command>
+        <command id="reset" title="🔄 Reset Counter" />
     </components>
 
     <script>

@@ -11,8 +11,8 @@
     <components>
         <radio id="languageRadio" v-bind-selected="Base.localization.code || 'en'"
             v-on-select="Base.localization.code = event.select.id; User.SetLanguage(event.select.id); UI.toast($t('Language changed')); UI.refresh();">
-            <option title="🇺🇸 English" value="en"></option>
-            <option title="🇷🇺 Russian" value="ru"></option>
+            <option title="🇺🇸 English" value="en" />
+            <option title="🇷🇺 Russian" value="ru" />
         </radio>
     </components>
 </view>

@@ -24,6 +24,7 @@
 	
 	<ItemGroup>
 		<None Include="Resources\**\*" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="..\Telegram.Bot.UI\.editorconfig" Link=".editorconfig" />
 		<None Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('appsettings.json')" />
 	</ItemGroup>
 </Project>

@@ -62,8 +62,9 @@ public class UiNamespace {
     /// <param name="pageId">Target page ID</param>
     /// <param name="subPage">If true, preserves back navigation</param>
     public void navigate(string pageId, bool subPage = true) {
-        if (page is null)
+        if (page is null) {
             return;
+        }
         context.navigated = true;
         page.NavigateToAsync(pageId, subPage, null).GetAwaiter().GetResult();
     }
@@ -72,8 +73,9 @@ public class UiNamespace {
     /// Navigate to another page with props.
     /// </summary>
     public void navigate(string pageId, bool subPage, JsValue props) {
-        if (page is null)
+        if (page is null) {
             return;
+        }
         context.navigated = true;
         var propsDict = context.ConvertJsObjectToDict(props);
         page.NavigateToAsync(pageId, subPage, propsDict).GetAwaiter().GetResult();
@@ -83,8 +85,9 @@ public class UiNamespace {
     /// Navigate asynchronously.
     /// </summary>
     public async Task<PageHandle?> navigateAsync(string pageId, bool subPage = true) {
-        if (page is null)
+        if (page is null) {
             return null;
+        }
         context.navigated = true;
         return await page.NavigateToAsync(pageId, subPage, null);
     }
@@ -93,8 +96,9 @@ public class UiNamespace {
     /// Navigate asynchronously with props.
     /// </summary>
     public async Task<PageHandle?> navigateAsync(string pageId, bool subPage, JsValue props) {
-        if (page is null)
+        if (page is null) {
             return null;
+        }
         context.navigated = true;
         var propsDict = context.ConvertJsObjectToDict(props);
         return await page.NavigateToAsync(pageId, subPage, propsDict);
@@ -104,8 +108,9 @@ public class UiNamespace {
     /// Navigate to a fresh page instance (ignores cache).
     /// </summary>
     public void navigateFresh(string pageId, bool subPage = true) {
-        if (page is null)
+        if (page is null) {
             return;
+        }
         context.navigated = true;
         page.NavigateToFreshAsync(pageId, subPage, null).GetAwaiter().GetResult();
     }
@@ -114,8 +119,9 @@ public class UiNamespace {
     /// Navigate to a fresh page instance with props.
     /// </summary>
     public void navigateFresh(string pageId, bool subPage, JsValue props) {
-        if (page is null)
+        if (page is null) {
             return;
+        }
         context.navigated = true;
         var propsDict = context.ConvertJsObjectToDict(props);
         page.NavigateToFreshAsync(pageId, subPage, propsDict).GetAwaiter().GetResult();
@@ -125,8 +131,9 @@ public class UiNamespace {
     /// Navigate to fresh page asynchronously.
     /// </summary>
     public async Task<PageHandle?> navigateFreshAsync(string pageId, bool subPage = true) {
-        if (page is null)
+        if (page is null) {
             return null;
+        }
         context.navigated = true;
         return await page.NavigateToFreshAsync(pageId, subPage, null);
     }
@@ -135,8 +142,9 @@ public class UiNamespace {
     /// Navigate to fresh page asynchronously with props.
     /// </summary>
     public async Task<PageHandle?> navigateFreshAsync(string pageId, bool subPage, JsValue props) {
-        if (page is null)
+        if (page is null) {
             return null;
+        }
         context.navigated = true;
         var propsDict = context.ConvertJsObjectToDict(props);
         return await page.NavigateToFreshAsync(pageId, subPage, propsDict);
@@ -336,8 +344,9 @@ public class UiNamespace {
     /// Go to next page in multi-page view.
     /// </summary>
     public void nextPage() {
-        if (page is null)
+        if (page is null) {
             return;
+        }
         var totalPages = page.GetPageCount();
         if (totalPages > 1) {
             page.currentPageIndex = (page.currentPageIndex + 1) % totalPages;
@@ -349,8 +358,9 @@ public class UiNamespace {
     /// Go to next page asynchronously.
     /// </summary>
     public async Task nextPageAsync() {
-        if (page is null)
+        if (page is null) {
             return;
+        }
         var totalPages = page.GetPageCount();
         if (totalPages > 1) {
             page.currentPageIndex = (page.currentPageIndex + 1) % totalPages;
@@ -362,8 +372,9 @@ public class UiNamespace {
     /// Go to previous page in multi-page view.
     /// </summary>
     public void prevPage() {
-        if (page is null)
+        if (page is null) {
             return;
+        }
         var totalPages = page.GetPageCount();
         if (totalPages > 1) {
             page.currentPageIndex = page.currentPageIndex - 1;
@@ -378,8 +389,9 @@ public class UiNamespace {
     /// Go to previous page asynchronously.
     /// </summary>
     public async Task prevPageAsync() {
-        if (page is null)
+        if (page is null) {
             return;
+        }
         var totalPages = page.GetPageCount();
         if (totalPages > 1) {
             page.currentPageIndex = page.currentPageIndex - 1;
@@ -394,8 +406,9 @@ public class UiNamespace {
     /// Go to specific page index.
     /// </summary>
     public void goToPage(int index) {
-        if (page is null)
+        if (page is null) {
             return;
+        }
         var totalPages = page.GetPageCount();
         if (index >= 0 && index < totalPages) {
             page.currentPageIndex = index;
@@ -407,8 +420,9 @@ public class UiNamespace {
     /// Go to specific page index asynchronously.
     /// </summary>
     public async Task goToPageAsync(int index) {
-        if (page is null)
+        if (page is null) {
             return;
+        }
         var totalPages = page.GetPageCount();
         if (index >= 0 && index < totalPages) {
             page.currentPageIndex = index;

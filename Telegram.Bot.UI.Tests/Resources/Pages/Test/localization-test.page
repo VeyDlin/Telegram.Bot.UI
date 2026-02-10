@@ -7,15 +7,15 @@
 
     <components>
         <!-- Test 1: $t in binding -->
-        <checkbox id="test1" :title="$t('Inversion')"></checkbox>
+        <checkbox id="test1" :title="$t('Inversion')" />
 
         <!-- Test 2: $t with concatenation -->
-        <checkbox id="test2" :title="'Prefix: ' + $t('Inversion')"></checkbox>
+        <checkbox id="test2" :title="'Prefix: ' + $t('Inversion')" />
 
         <!-- Test 3: Static title (should work) -->
-        <checkbox id="test3" title="Static Title"></checkbox>
+        <checkbox id="test3" title="Static Title" />
 
         <!-- Test 4: $t in template syntax -->
-        <checkbox id="test4" title="{{ $t('Inversion') }}"></checkbox>
+        <checkbox id="test4" title="{{ $t('Inversion') }}" />
     </components>
 </view>

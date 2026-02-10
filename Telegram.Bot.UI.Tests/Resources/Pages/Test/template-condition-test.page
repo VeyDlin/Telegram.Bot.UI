@@ -18,12 +18,12 @@
 
     <components>
         <row>
-            <command id="start-loading" title="Start Loading"></command>
-            <command id="set-result" title="Set Result"></command>
+            <command id="start-loading" title="Start Loading" />
+            <command id="set-result" title="Set Result" />
         </row>
         <row>
-            <command id="set-error" title="Set Error"></command>
-            <command id="reset" title="Reset"></command>
+            <command id="set-error" title="Set Error" />
+            <command id="reset" title="Reset" />
         </row>
     </components>
 

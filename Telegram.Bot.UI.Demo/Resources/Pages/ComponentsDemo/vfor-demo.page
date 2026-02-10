@@ -13,28 +13,28 @@
         <!-- v-for with user objects -->
         <command v-for="user in users"
                  title="{{ user.emoji }} {{ user.name }} ({{ user.role }})"
-                 @click="selectUser(user)"></command>
+                 @click="selectUser(user)" />
 
         <!-- v-for with tasks and conditional styling -->
         <checkbox v-for="task in tasks"
                   id="{{ 'task-' + task.id }}"
                   title="{{ task.done ? '✅ ' + task.text : '⬜ ' + task.text }}"
-                  @update="toggleTask(task)"></checkbox>
+                  @update="toggleTask(task)" />
 
         <!-- v-for with index -->
         <command v-for="(color, idx) in colors"
                  title="{{ (idx + 1) + '. ' + color.name + ' ' + color.hex }}"
-                 @click="selectColor(color, idx)"></command>
+                 @click="selectColor(color, idx)" />
 
         <!-- Actions -->
         <row>
-            <command id="addUser" title="👤 Add User" columns="2"></command>
-            <command id="addTask" title="📝 Add Task" columns="2"></command>
+            <command id="addUser" title="👤 Add User" columns="2" />
+            <command id="addTask" title="📝 Add Task" columns="2" />
         </row>
 
-        <command id="toggleAll" title="🔄 Toggle All Tasks"></command>
+        <command id="toggleAll" title="🔄 Toggle All Tasks" />
 
-        <navigate></navigate>
+        <navigate />
     </components>
 
     <script>

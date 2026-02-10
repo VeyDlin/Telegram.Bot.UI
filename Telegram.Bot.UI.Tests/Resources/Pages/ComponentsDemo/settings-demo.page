@@ -9,39 +9,39 @@
 
     <components max-rows="5">
         <!-- Page 1: General - using checkboxes for ON/OFF toggles -->
-        <checkbox id="darkMode" title="{{ self.isSelected ? '🌙 Dark Mode: ON' : '☀️ Dark Mode: OFF' }}"></checkbox>
+        <checkbox id="darkMode" title="{{ self.isSelected ? '🌙 Dark Mode: ON' : '☀️ Dark Mode: OFF' }}" />
 
-        <checkbox id="sounds" title="{{ self.isSelected ? '🔊 Sounds: ON' : '🔇 Sounds: OFF' }}"></checkbox>
+        <checkbox id="sounds" title="{{ self.isSelected ? '🔊 Sounds: ON' : '🔇 Sounds: OFF' }}" />
 
-        <checkbox id="vibration" title="{{ self.isSelected ? '📳 Vibration: ON' : '📴 Vibration: OFF' }}"></checkbox>
+        <checkbox id="vibration" title="{{ self.isSelected ? '📳 Vibration: ON' : '📴 Vibration: OFF' }}" />
 
         <radio id="fontSize">
-            <option value="small" title="🔤 Small Text"></option>
-            <option value="medium" title="🔤 Medium Text"></option>
-            <option value="large" title="🔤 Large Text"></option>
+            <option value="small" title="🔤 Small Text" />
+            <option value="medium" title="🔤 Medium Text" />
+            <option value="large" title="🔤 Large Text" />
         </radio>
 
         <!-- Page 2: Privacy -->
-        <checkbox id="analytics" title="{{ self.isSelected ? '📊 Analytics: ON' : '📊 Analytics: OFF' }}"></checkbox>
+        <checkbox id="analytics" title="{{ self.isSelected ? '📊 Analytics: ON' : '📊 Analytics: OFF' }}" />
 
-        <checkbox id="location" title="{{ self.isSelected ? '📍 Location: ON' : '📍 Location: OFF' }}"></checkbox>
+        <checkbox id="location" title="{{ self.isSelected ? '📍 Location: ON' : '📍 Location: OFF' }}" />
 
         <row>
-            <checkbox id="shareContacts" title="👥 Contacts"></checkbox>
-            <checkbox id="sharePhotos" title="📷 Photos"></checkbox>
+            <checkbox id="shareContacts" title="👥 Contacts" />
+            <checkbox id="sharePhotos" title="📷 Photos" />
         </row>
 
         <!-- Page 3: About -->
-        <command id="version" title="📱 Version 1.0.0"></command>
+        <command id="version" title="📱 Version 1.0.0" />
 
-        <command id="terms" title="📄 Terms of Service"></command>
+        <command id="terms" title="📄 Terms of Service" />
 
-        <command id="privacy" title="🔒 Privacy Policy"></command>
+        <command id="privacy" title="🔒 Privacy Policy" />
 
-        <command id="resetAll" title="⚠️ Reset All Settings"></command>
+        <command id="resetAll" title="⚠️ Reset All Settings" />
 
         <!-- Navigation -->
-        <navigate></navigate>
+        <navigate />
     </components>
 
     <script>

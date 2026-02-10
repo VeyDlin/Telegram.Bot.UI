@@ -20,9 +20,9 @@
         <radio id="items" columns="1" max-items="3"
             v-bind-selected="selected"
             v-on-select="selected = event.select.id;">
-            <option v-for="item in items" :value="item.id" :title="item.name"></option>
+            <option v-for="item in items" :value="item.id" :title="item.name" />
         </radio>
 
-        <navigate target="items"></navigate>
+        <navigate target="items" />
     </components>
 </view>

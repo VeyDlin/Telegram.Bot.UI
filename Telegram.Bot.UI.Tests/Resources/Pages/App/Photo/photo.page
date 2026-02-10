@@ -12,15 +12,15 @@
 
     <components>
         <!-- Media-to-media navigation -->
-        <open id="toDocument" title="📄 Open as Document" target="document"></open>
+        <open id="toDocument" title="📄 Open as Document" target="document" />
 
         <!-- Actions -->
         <row>
-            <command id="likeBtn" title="👍 Like" columns="2"></command>
-            <command id="shareBtn" title="🔗 Share" columns="2"></command>
+            <command id="likeBtn" title="👍 Like" columns="2" />
+            <command id="shareBtn" title="🔗 Share" columns="2" />
         </row>
 
-        <command id="infoBtn" title="ℹ️ Photo Info"></command>
+        <command id="infoBtn" title="ℹ️ Photo Info" />
     </components>
 
     <script>

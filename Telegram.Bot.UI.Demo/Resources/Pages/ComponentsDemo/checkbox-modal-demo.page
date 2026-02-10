@@ -51,8 +51,8 @@
                     Mark the most important notes.
                 </message>
             </option>
-            <option title="💡 Ideas" value="ideas"></option>
-            <option title="📅 Events" value="events"></option>
+            <option title="💡 Ideas" value="ideas" />
+            <option title="📅 Events" value="events" />
         </checkbox-modal>
 
         <!-- Checkbox-modal with v-for options -->
@@ -77,18 +77,18 @@
         <!-- Checkbox-modal with pagination -->
         <checkbox-modal id="paginatedCheckbox" title="📄 Paginated"
             maxItems="3">
-            <option title="Option 1" value="1"></option>
-            <option title="Option 2" value="2"></option>
-            <option title="Option 3" value="3"></option>
-            <option title="Option 4" value="4"></option>
-            <option title="Option 5" value="5"></option>
-            <option title="Option 6" value="6"></option>
+            <option title="Option 1" value="1" />
+            <option title="Option 2" value="2" />
+            <option title="Option 3" value="3" />
+            <option title="Option 4" value="4" />
+            <option title="Option 5" value="5" />
+            <option title="Option 6" value="6" />
         </checkbox-modal>
 
         <!-- Simple buttons -->
         <row>
-            <command id="showSelection" title="📋 Show Selection" columns="2"></command>
-            <command id="clearAll" title="🗑️ Clear All" columns="2"></command>
+            <command id="showSelection" title="📋 Show Selection" columns="2" />
+            <command id="clearAll" title="🗑️ Clear All" columns="2" />
         </row>
     </components>
 

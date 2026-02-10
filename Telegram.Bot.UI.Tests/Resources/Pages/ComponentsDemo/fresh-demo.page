@@ -12,20 +12,20 @@
     </message>
 
     <components>
-        <command id="incrementBtn" title="➕ Increment Counter"></command>
+        <command id="incrementBtn" title="➕ Increment Counter" />
 
         <row>
             <!-- Normal navigate - uses cached instance -->
-            <command id="navigateCachedBtn" title="🔄 Navigate (Cached)" columns="2"></command>
+            <command id="navigateCachedBtn" title="🔄 Navigate (Cached)" columns="2" />
             <!-- Fresh navigate - creates new instance -->
-            <command id="navigateFreshBtn" title="✨ Navigate Fresh" columns="2"></command>
+            <command id="navigateFreshBtn" title="✨ Navigate Fresh" columns="2" />
         </row>
 
         <row>
             <!-- Without back button -->
-            <command id="navigateNoBackBtn" title="🚀 Navigate (No Back)" columns="2"></command>
+            <command id="navigateNoBackBtn" title="🚀 Navigate (No Back)" columns="2" />
             <!-- Clear keyboard demo -->
-            <command id="clearKeyboardBtn" title="🧹 Clear Keyboard" columns="2"></command>
+            <command id="clearKeyboardBtn" title="🧹 Clear Keyboard" columns="2" />
         </row>
     </components>
 

@@ -13,27 +13,27 @@
 
     <components>
         <!-- Notifications toggle (checkbox for ON/OFF) -->
-        <checkbox id="notifications" title="{{ self.isSelected ? '🔔 Notifications: ON' : '🔕 Notifications: OFF' }}" :selected="notificationsEnabled"></checkbox>
+        <checkbox id="notifications" title="{{ self.isSelected ? '🔔 Notifications: ON' : '🔕 Notifications: OFF' }}" :selected="notificationsEnabled" />
 
         <!-- Theme selection -->
         <radio id="theme" v-bind-selected="selectedTheme">
-            <option value="light" title="☀️ Light Theme"></option>
-            <option value="dark" title="🌙 Dark Theme"></option>
-            <option value="system" title="💻 System Default"></option>
+            <option value="light" title="☀️ Light Theme" />
+            <option value="dark" title="🌙 Dark Theme" />
+            <option value="system" title="💻 System Default" />
         </radio>
 
         <!-- Categories multi-select (individual checkboxes) -->
         <row>
-            <checkbox id="cat_news" title="{{ self.isSelected ? '✅ News' : '📰 News' }}"></checkbox>
-            <checkbox id="cat_updates" title="{{ self.isSelected ? '✅ Updates' : '🔄 Updates' }}"></checkbox>
+            <checkbox id="cat_news" title="{{ self.isSelected ? '✅ News' : '📰 News' }}" />
+            <checkbox id="cat_updates" title="{{ self.isSelected ? '✅ Updates' : '🔄 Updates' }}" />
         </row>
         <row>
-            <checkbox id="cat_offers" title="{{ self.isSelected ? '✅ Offers' : '🎁 Offers' }}"></checkbox>
-            <checkbox id="cat_tips" title="{{ self.isSelected ? '✅ Tips' : '💡 Tips' }}"></checkbox>
+            <checkbox id="cat_offers" title="{{ self.isSelected ? '✅ Offers' : '🎁 Offers' }}" />
+            <checkbox id="cat_tips" title="{{ self.isSelected ? '✅ Tips' : '💡 Tips' }}" />
         </row>
 
         <!-- Submit button -->
-        <command id="submit" title="✅ Save Settings"></command>
+        <command id="submit" title="✅ Save Settings" />
     </components>
 
     <script>

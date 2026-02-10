@@ -11,11 +11,11 @@
 
     <components>
         <row>
-            <command id="decrement" title="- Decrement" columns="2"></command>
-            <command id="increment" title="+ Increment" columns="2"></command>
+            <command id="decrement" title="- Decrement" columns="2" />
+            <command id="increment" title="+ Increment" columns="2" />
         </row>
-        <command id="reset" title="Reset"></command>
-        <navigate></navigate>
+        <command id="reset" title="Reset" />
+        <navigate />
     </components>
 
     <script>

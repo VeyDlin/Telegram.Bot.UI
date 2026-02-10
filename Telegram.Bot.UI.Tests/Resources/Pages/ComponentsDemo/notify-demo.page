@@ -13,18 +13,18 @@
 
     <components>
         <!-- Toast notification -->
-        <command id="toastBtn" title="📢 Show Toast"></command>
+        <command id="toastBtn" title="📢 Show Toast" />
 
         <!-- Alert popup -->
-        <command id="alertBtn" title="⚠️ Show Alert"></command>
+        <command id="alertBtn" title="⚠️ Show Alert" />
 
         <!-- Close page (delete message) -->
-        <command id="closeBtn" title="🗑️ Close Page"></command>
+        <command id="closeBtn" title="🗑️ Close Page" />
 
         <!-- Confirm action pattern -->
         <row>
-            <command id="confirmBtn" title="✅ Confirm Action" columns="2"></command>
-            <command id="cancelBtn" title="❌ Cancel" columns="2"></command>
+            <command id="confirmBtn" title="✅ Confirm Action" columns="2" />
+            <command id="cancelBtn" title="❌ Cancel" columns="2" />
         </row>
     </components>
 

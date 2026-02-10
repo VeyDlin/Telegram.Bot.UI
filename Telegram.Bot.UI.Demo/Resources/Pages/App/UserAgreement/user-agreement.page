@@ -7,12 +7,11 @@
     <components>
         <radio id="languageRadio" v-bind-selected="Base.localization.code || 'en'"
             v-on-select="Base.localization.code = event.select.id; User.SetLanguage(event.select.id); UI.refresh();">
-            <option title="🇺🇸 English" value="en"></option>
-            <option title="🇷🇺 Russian" value="ru"></option>
+            <option title="🇺🇸 English" value="en" />
+            <option title="🇷🇺 Russian" value="ru" />
         </radio>
 
         <command id="acceptBtn" :title="'✅ ' + $t('I solemnly swear!')"
-            v-on-click="User.AcceptLicenseFromPage(); UI.close(); UI.navigate('home', false);">
-        </command>
+            v-on-click="User.AcceptLicenseFromPage(); UI.close(); UI.navigate('home', false);" />
     </components>
 </view>

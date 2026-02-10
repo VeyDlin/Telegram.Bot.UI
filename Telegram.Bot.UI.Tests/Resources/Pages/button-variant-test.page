@@ -1,0 +1,28 @@
+<view id="button-variant-test" back-to-parent="false">
+    <title>Button Variant Test</title>
+
+    <message>
+        Button variant test
+    </message>
+
+    <components>
+        <command id="primary" title="Primary" variant="primary" />
+        <command id="danger" title="Danger" variant="danger" />
+        <command id="success" title="Success" variant="success" />
+        <command id="default" title="Default" />
+        <command id="withIcon" title="Icon" icon="5368324170671202286" />
+        <command id="both" title="Both" variant="primary" icon="5368324170671202286" />
+
+        <radio id="styledRadio" columns="1">
+            <option value="opt1" title="Option 1" variant="primary" />
+            <option value="opt2" title="Option 2" variant="danger" />
+            <option value="opt3" title="Option 3" />
+        </radio>
+
+        <checkbox-list id="styledCheckbox" columns="1">
+            <option value="chk1" title="Check 1" variant="success" />
+            <option value="chk2" title="Check 2" icon="5368324170671202286" />
+            <option value="chk3" title="Check 3" />
+        </checkbox-list>
+    </components>
+</view>

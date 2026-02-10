@@ -20,8 +20,7 @@
     <components>
         <!-- Invert checkbox -->
         <checkbox id="invertCheck" :title="$t('Inversion')" v-bind-selected="applyInvert"
-            v-on-update="applyInvert = event.selected;">
-        </checkbox>
+            v-on-update="applyInvert = event.selected;" />
 
         <!-- Filter settings row 1 -->
         <row>
@@ -33,10 +32,10 @@
                     {{ $t('Select brightness level') }}
                     <wallpaper url="{{ VModel.GetWallpaperUrl(self.id === 'off' ? 'off' : 'brightness-' + self.id) }}"/>
                 </message>
-                <option :title="$t('Off')" value="off"></option>
-                <option :title="$t('Low')" value="low"></option>
-                <option :title="$t('Medium')" value="medium"></option>
-                <option :title="$t('High')" value="high"></option>
+                <option :title="$t('Off')" value="off" />
+                <option :title="$t('Low')" value="low" />
+                <option :title="$t('Medium')" value="medium" />
+                <option :title="$t('High')" value="high" />
             </radio-modal>
 
             <radio-modal id="contrastRadio" :title="$t('Contrast') + ' <' + contrastTitle + '>'"
@@ -47,10 +46,10 @@
                     {{ $t('Select contrast level') }}
                     <wallpaper url="{{ VModel.GetWallpaperUrl(self.id === 'off' ? 'off' : 'contrast-' + self.id) }}"/>
                 </message>
-                <option :title="$t('Off')" value="off"></option>
-                <option :title="$t('Low')" value="low"></option>
-                <option :title="$t('Medium')" value="medium"></option>
-                <option :title="$t('High')" value="high"></option>
+                <option :title="$t('Off')" value="off" />
+                <option :title="$t('Low')" value="low" />
+                <option :title="$t('Medium')" value="medium" />
+                <option :title="$t('High')" value="high" />
             </radio-modal>
         </row>
 
@@ -64,10 +63,10 @@
                     {{ $t('Select blur level') }}
                     <wallpaper url="{{ await VModel.GetWallpaperUrlAsync(self.id === 'off' ? 'off' : 'blur-' + self.id) }}"/>
                 </message>
-                <option :title="$t('Off')" value="off"></option>
-                <option :title="$t('Low')" value="low"></option>
-                <option :title="$t('Medium')" value="medium"></option>
-                <option :title="$t('High')" value="high"></option>
+                <option :title="$t('Off')" value="off" />
+                <option :title="$t('Low')" value="low" />
+                <option :title="$t('Medium')" value="medium" />
+                <option :title="$t('High')" value="high" />
             </radio-modal>
 
             <radio-modal id="pixelateRadio" :title="$t('Pixelate') + ' <' + pixelateTitle + '>'"
@@ -78,15 +77,15 @@
                     {{ $t('Select pixelation level') }}
                     <wallpaper url="{{ VModel.GetWallpaperUrl(self.id === 'off' ? 'off' : 'pixelate-' + self.id) }}"/>
                 </message>
-                <option :title="$t('Off')" value="off"></option>
-                <option :title="$t('Low')" value="low"></option>
-                <option :title="$t('Medium')" value="medium"></option>
-                <option :title="$t('High')" value="high"></option>
+                <option :title="$t('Off')" value="off" />
+                <option :title="$t('Low')" value="low" />
+                <option :title="$t('Medium')" value="medium" />
+                <option :title="$t('High')" value="high" />
             </radio-modal>
         </row>
 
         <!-- Generate button -->
-        <command id="generateBtn" :title="'✨ ' + $t('Start')" @click="generate()"></command>
+        <command id="generateBtn" :title="'✨ ' + $t('Start')" @click="generate()" />
     </components>
 
     <script>

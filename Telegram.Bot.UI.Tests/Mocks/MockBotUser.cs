@@ -16,6 +16,8 @@ namespace Telegram.Bot.UI.Tests.Mocks;
 public class MockButton {
     public string Text { get; set; } = "";
     public string? CallbackData { get; set; }
+    public KeyboardButtonStyle? Style { get; set; }
+    public string? IconCustomEmojiId { get; set; }
 }
 
 /// <summary>
@@ -249,7 +251,9 @@ public class MockBotUser : BaseBotUser {
         return inline.InlineKeyboard
             .Select(row => row.Select(btn => new MockButton {
                 Text = btn.Text,
-                CallbackData = btn.CallbackData
+                CallbackData = btn.CallbackData,
+                Style = btn.Style,
+                IconCustomEmojiId = btn.IconCustomEmojiId
             }).ToArray())
             .ToArray();
     }

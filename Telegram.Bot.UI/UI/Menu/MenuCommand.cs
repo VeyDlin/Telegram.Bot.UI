@@ -72,11 +72,11 @@ public class MenuCommand : AutoComponent {
             }
         });
 
-        return [
+        return ApplyButtonVariant([
             InlineKeyboardButton.WithCallbackData(
                 text: GetProp(nameof(title)),
                 callbackData: callbackId
             )
-        ];
+        ]);
     }
 }

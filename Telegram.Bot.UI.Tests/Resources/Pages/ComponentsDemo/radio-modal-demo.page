@@ -60,10 +60,10 @@
         <radio-modal id="sizeModal" :title="'📐 Size: ' + selectedSize"
             v-bind-selected="selectedSize"
             v-on-select="selectedSize = event.select.id;">
-            <option title="S - Small" value="small"></option>
-            <option title="M - Medium" value="medium"></option>
-            <option title="L - Large" value="large"></option>
-            <option title="XL - Extra Large" value="xlarge"></option>
+            <option title="S - Small" value="small" />
+            <option title="M - Medium" value="medium" />
+            <option title="L - Large" value="large" />
+            <option title="XL - Extra Large" value="xlarge" />
         </radio-modal>
 
         <!-- Radio-modal with v-for options -->
@@ -79,12 +79,12 @@
         <!-- Radio-modal with pagination -->
         <radio-modal id="paginatedModal" title="📄 Paginated (3 per page)"
             maxItems="3">
-            <option title="Page 1" value="p1"></option>
-            <option title="Page 2" value="p2"></option>
-            <option title="Page 3" value="p3"></option>
-            <option title="Page 4" value="p4"></option>
-            <option title="Page 5" value="p5"></option>
-            <option title="Page 6" value="p6"></option>
+            <option title="Page 1" value="p1" />
+            <option title="Page 2" value="p2" />
+            <option title="Page 3" value="p3" />
+            <option title="Page 4" value="p4" />
+            <option title="Page 5" value="p5" />
+            <option title="Page 6" value="p6" />
         </radio-modal>
     </components>
 </view>

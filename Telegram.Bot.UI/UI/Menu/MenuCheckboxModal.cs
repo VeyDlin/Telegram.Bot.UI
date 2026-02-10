@@ -209,12 +209,12 @@ public class MenuCheckboxModal : AutoComponent {
                 : GetSelectionSummary();
         }
 
-        return new() {
+        return ApplyButtonVariant(new() {
             InlineKeyboardButton.WithCallbackData(
                 text: buttonText,
                 callbackData: callbackId
             )
-        };
+        });
     }
 
     private string GetSelectionSummary() {

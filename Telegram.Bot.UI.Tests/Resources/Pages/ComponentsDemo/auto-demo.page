@@ -13,24 +13,24 @@
         <!-- Auto-card with items binding -->
         <auto-card id="itemsCard" :items="items" max-items="4">
             <template slot="item">
-                <command :title="item.icon + ' ' + item.name" @click="selectItem(item)"></command>
+                <command :title="item.icon + ' ' + item.name" @click="selectItem(item)" />
             </template>
         </auto-card>
 
         <!-- Manual navigation for auto-card -->
         <row>
-            <command id="prevBtn" title="◀ Prev" columns="3"></command>
-            <command id="pageInfo" title="{{ cardPage + 1 }}/{{ cardPageCount }}" columns="3"></command>
-            <command id="nextBtn" title="Next ▶" columns="3"></command>
+            <command id="prevBtn" title="◀ Prev" columns="3" />
+            <command id="pageInfo" title="{{ cardPage + 1 }}/{{ cardPageCount }}" columns="3" />
+            <command id="nextBtn" title="Next ▶" columns="3" />
         </row>
 
         <!-- Actions -->
         <row>
-            <command id="addBtn" title="➕ Add Item" columns="2"></command>
-            <command id="removeBtn" title="➖ Remove Item" columns="2"></command>
+            <command id="addBtn" title="➕ Add Item" columns="2" />
+            <command id="removeBtn" title="➖ Remove Item" columns="2" />
         </row>
 
-        <command id="shuffleBtn" title="🔀 Shuffle Items"></command>
+        <command id="shuffleBtn" title="🔀 Shuffle Items" />
     </components>
 
     <script>

@@ -132,7 +132,9 @@ public class MenuRadio : AutoComponent, IPaginatedComponent {
         var options = ParseOptions();
         buttons = options.Select(opt => new MenuSelector {
             id = opt.id,
-            title = opt.lang ? botUser.L(render(opt.title)) : render(opt.title)
+            title = opt.lang ? botUser.L(render(opt.title)) : render(opt.title),
+            variant = opt.variant,
+            icon = opt.icon
         }).ToList();
     }
 
@@ -255,12 +257,28 @@ public class MenuRadio : AutoComponent, IPaginatedComponent {
             ctx.SetSelf(new { isSelected = index == selected, title = button.title, index });
             var text = await ctx.RenderAsync(templateValue);
 
-            list.Add(
-                InlineKeyboardButton.WithCallbackData(
-                    text: text,
-                    callbackData: callbackId
-                )
+            var btn = InlineKeyboardButton.WithCallbackData(
+                text: text,
+                callbackData: callbackId
             );
+
+            // Apply per-option variant/icon, falling back to component-level
+            var componentVariantStr = GetProp(nameof(variant), "");
+            KeyboardButtonStyle? componentVariant = null;
+            if (!string.IsNullOrEmpty(componentVariantStr) && Enum.TryParse<KeyboardButtonStyle>(componentVariantStr, true, out var pv)) {
+                componentVariant = pv;
+            }
+            var componentIcon = GetProp(nameof(icon), "");
+            var effectiveVariant = button.variant ?? componentVariant;
+            var effectiveIcon = !string.IsNullOrEmpty(button.icon) ? button.icon : componentIcon;
+            if (effectiveVariant.HasValue) {
+                btn.Style = effectiveVariant;
+            }
+            if (!string.IsNullOrEmpty(effectiveIcon)) {
+                btn.IconCustomEmojiId = effectiveIcon;
+            }
+
+            list.Add(btn);
         }
 
         return list;

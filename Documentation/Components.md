@@ -29,6 +29,8 @@ A button that executes a JavaScript callback when clicked.
 | `id` | string | Component ID for JavaScript access |
 | `hide` | boolean | Hide the button conditionally |
 | `columns` | number | Number of columns this button spans |
+| `variant` | string | Button style: `primary`, `danger`, `success` |
+| `icon` | string | Custom emoji ID for button icon |
 
 ### Example
 
@@ -63,6 +65,8 @@ A button that opens a page, external link, or Telegram Web App.
 | `subPage` | boolean | `true` | Open as sub-page (preserves back navigation) |
 | `id` | string | - | Component ID for JavaScript access |
 | `hide` | boolean | `false` | Hide the button conditionally |
+| `variant` | string | - | Button style: `primary`, `danger`, `success` |
+| `icon` | string | - | Custom emoji ID for button icon |
 
 ### Type Values
 
@@ -102,6 +106,8 @@ A toggleable checkbox button.
 | `@update` | JS expression | - | Handler called when state changes |
 | `id` | string | - | Component ID for JavaScript access |
 | `hide` | boolean | `false` | Hide the checkbox |
+| `variant` | string | - | Button style: `primary`, `danger`, `success` |
+| `icon` | string | - | Custom emoji ID for button icon |
 
 ### Template Variables
 
@@ -153,10 +159,12 @@ A multi-select list where multiple options can be toggled on/off.
 | `columns` | number | `1` | Number of columns for button layout |
 | `max-items` | number | - | Maximum items per page (enables pagination with `<navigate>`) |
 | `hide` | boolean | `false` | Hide the checkbox list |
+| `variant` | string | - | Default button style for all options: `primary`, `danger`, `success` |
+| `icon` | string | - | Default custom emoji ID for all option buttons |
 
 ### Child Elements
 
-Options are defined using `<option>` child elements (same as radio).
+Options are defined using `<option>` child elements (same as radio). Each `<option>` can also have `variant` and `icon` attributes that override the component-level values.
 
 ### Template Variables
 
@@ -214,10 +222,12 @@ A group of radio buttons where only one option can be selected.
 | `columns` | number | `1` | Number of columns for button layout |
 | `max-items` | number | - | Maximum items per page (enables pagination with `<navigate>`) |
 | `hide` | boolean | `false` | Hide the radio group |
+| `variant` | string | - | Default button style for all options: `primary`, `danger`, `success` |
+| `icon` | string | - | Default custom emoji ID for all option buttons |
 
 ### Child Elements
 
-Radio buttons are defined using `<option>` child elements:
+Radio buttons are defined using `<option>` child elements. Each `<option>` can also have `variant` and `icon` attributes that override the component-level values.
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
@@ -225,6 +235,8 @@ Radio buttons are defined using `<option>` child elements:
 | `title` | string | Option display text |
 | `:title` | JS expression | Dynamic title (use `$t()` for localization) |
 | `v-for` | expression | Generate options dynamically |
+| `variant` | string | Per-option button style: `primary`, `danger`, `success` |
+| `icon` | string | Per-option custom emoji ID |
 
 ### Examples
 
@@ -271,6 +283,8 @@ A carousel button that cycles through options on each click.
 | `@update` | JS expression | - | Handler called when value changes |
 | `id` | string | - | Component ID for JavaScript access |
 | `hide` | boolean | `false` | Hide the switch |
+| `variant` | string | - | Button style: `primary`, `danger`, `success` |
+| `icon` | string | - | Custom emoji ID for button icon |
 
 ### Child Elements
 
@@ -390,6 +404,8 @@ Navigation controls for paginated components (card, radio, checkbox-list).
 | `hideBoundary` | boolean | `false` | Hide prev/next at boundaries |
 | `boundaryMessage` | string | - | Toast message at boundaries |
 | `@click` | JS expression | - | Handler for counter button click |
+| `variant` | string | - | Button style for all navigation buttons: `primary`, `danger`, `success` |
+| `icon` | string | - | Custom emoji ID for navigation buttons |
 
 ### Supported Components
 
@@ -478,6 +494,43 @@ These attributes are available on most components:
 | `id` | string | Unique component ID for JavaScript access via `component(id)` |
 | `hide` | boolean | Conditionally hide the component |
 | `columns` | number | Number of columns this component spans (layout hint) |
+| `variant` | string | Button style variant: `primary`, `danger`, `success` |
+| `icon` | string | Custom emoji ID to display as button icon |
+
+### variant
+
+Sets the visual style of a button. Available values:
+
+- `primary` — primary action style
+- `danger` — destructive/warning action style
+- `success` — confirmation/positive action style
+
+If not specified, the default Telegram button style is used.
+
+```xml
+<command title="Save" variant="success" />
+<command title="Delete" variant="danger" />
+```
+
+### icon
+
+Sets a custom emoji icon on the button using a custom emoji ID.
+
+```xml
+<command title="Settings" icon="5368324170671202286" />
+```
+
+### Per-option variant and icon
+
+For `<radio>`, `<checkbox-list>`, and `<switch>` components, `variant` and `icon` can be set on individual `<option>` elements. Per-option values take priority over the component-level values.
+
+```xml
+<radio id="actions" variant="primary">
+    <option value="save" title="Save" variant="success" />
+    <option value="delete" title="Delete" variant="danger" />
+    <option value="edit" title="Edit" />  <!-- inherits variant="primary" -->
+</radio>
+```
 
 ---
 

@@ -6,13 +6,13 @@
 
     <components>
         <row>
-            <open id="uiDemo" title="🎮 UI Components" target="ui-demo" columns="2"></open>
-            <open id="languageBtn" :title="'🌐 ' + $t('Language')" target="language" columns="2"></open>
+            <open id="uiDemo" title="🎮 UI Components" target="ui-demo" columns="2" />
+            <open id="languageBtn" :title="'🌐 ' + $t('Language')" target="language" columns="2" />
         </row>
 
         <row>
-            <open id="supportLink" type="link" :title="'🆘 ' + $t('Support')" target="https://t.me/BotFather" columns="2"></open>
-            <command id="aboutBtn" :title="'ℹ️ ' + $t('About')" columns="2"></command>
+            <open id="supportLink" type="link" :title="'🆘 ' + $t('Support')" target="https://t.me/BotFather" columns="2" />
+            <command id="aboutBtn" :title="'ℹ️ ' + $t('About')" columns="2" />
         </row>
     </components>
 

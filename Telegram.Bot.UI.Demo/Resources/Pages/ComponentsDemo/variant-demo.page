@@ -1,0 +1,46 @@
+<view id="variant-demo" web-preview="false">
+    <title>🎨 Button Variants Demo</title>
+
+    <script>
+        var currentVariant = 'primary';
+        var variants = [
+            { id: 'primary', name: 'Primary' },
+            { id: 'danger', name: 'Danger' },
+            { id: 'success', name: 'Success' }
+        ];
+    </script>
+
+    <message>
+        <b>Button Variant &amp; Icon Demo</b>
+        <br/><br/>
+        Telegram Bot API 9.4 button styling.
+        <br/>
+        Supports <b>variant</b> (primary, danger, success) and <b>icon</b> (custom emoji).
+    </message>
+
+    <components>
+        <!-- Basic variants -->
+        <command title="Primary Button" variant="primary" />
+        <command title="Danger Button" variant="danger" />
+        <command title="Success Button" variant="success" />
+        <command title="Default Button" />
+
+        <!-- Row with mixed variants -->
+        <row>
+            <command title="Save" variant="success" columns="2" />
+            <command title="Delete" variant="danger" columns="2" />
+        </row>
+
+        <!-- Radio with per-option variants -->
+        <radio id="styledRadio" columns="1" @select="currentVariant = event.select.id;">
+            <option v-for="v in variants" :value="v.id" :title="v.name" :variant="v.id" />
+        </radio>
+
+        <!-- Checkbox list with per-option variants -->
+        <checkbox-list id="styledChecklist" columns="1">
+            <option value="opt1" title="Success option" variant="success" />
+            <option value="opt2" title="Danger option" variant="danger" />
+            <option value="opt3" title="Default option" />
+        </checkbox-list>
+    </components>
+</view>

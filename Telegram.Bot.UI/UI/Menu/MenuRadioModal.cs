@@ -192,11 +192,11 @@ public class MenuRadioModal : AutoComponent {
                 : selectButton?.title ?? "";
         }
 
-        return new() {
+        return ApplyButtonVariant(new() {
             InlineKeyboardButton.WithCallbackData(
                 text: buttonText,
                 callbackData: callbackId
             )
-        };
+        });
     }
 }

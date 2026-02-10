@@ -4,6 +4,7 @@ using Jint.Native;
 using Jint.Native.Array;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.UI.Components.Attributes;
 using Telegram.Bot.UI.Menu;
 using Telegram.Bot.UI.Runtime;
@@ -473,13 +474,21 @@ public abstract class AutoComponent : MenuElement {
             idValue = evaluated.IsNull() || evaluated.IsUndefined() ? "" : evaluated.ToString();
         }
 
+        var variantAttr = opt.GetAttribute("variant");
+        KeyboardButtonStyle? optionVariant = null;
+        if (!string.IsNullOrEmpty(variantAttr) && Enum.TryParse<KeyboardButtonStyle>(variantAttr, true, out var parsedVariant)) {
+            optionVariant = parsedVariant;
+        }
+
         return new OptionInfo {
             id = idValue ?? "",
             title = titleValue ?? "",
             lang = opt.HasAttribute("lang"),
             pageResource = opt.GetAttribute("pageResource"),
             messageResource = opt.GetAttribute("messageResource"),
-            webPreview = webPreview
+            webPreview = webPreview,
+            variant = optionVariant,
+            icon = opt.GetAttribute("icon")
         };
     }
 
@@ -516,6 +525,52 @@ public abstract class AutoComponent : MenuElement {
         /// Gets or initializes a value indicating whether web preview is enabled.
         /// </summary>
         public bool? webPreview { get; init; } = null;
+
+        /// <summary>
+        /// Gets or initializes the button style variant.
+        /// </summary>
+        public KeyboardButtonStyle? variant { get; init; }
+
+        /// <summary>
+        /// Gets or initializes the custom emoji icon ID.
+        /// </summary>
+        public string? icon { get; init; }
+    }
+
+    /// <summary>
+    /// Button style variant (primary, danger, success).
+    /// Maps to Telegram's KeyboardButtonStyle.
+    /// </summary>
+    [Prop("variant")]
+    public string variant { get; set; } = "";
+
+    /// <summary>
+    /// Custom emoji ID for the button icon.
+    /// </summary>
+    [Prop("icon")]
+    public string icon { get; set; } = "";
+
+    /// <summary>
+    /// Applies variant and icon styles to a list of inline keyboard buttons.
+    /// Reads from component props (supports templates and bindings).
+    /// </summary>
+    protected List<InlineKeyboardButton> ApplyButtonVariant(List<InlineKeyboardButton> buttons) {
+        var variantStr = GetProp(nameof(variant), "");
+        KeyboardButtonStyle? variantValue = null;
+        if (!string.IsNullOrEmpty(variantStr) && Enum.TryParse<KeyboardButtonStyle>(variantStr, true, out var parsed)) {
+            variantValue = parsed;
+        }
+        var iconValue = GetProp(nameof(icon), "");
+
+        foreach (var button in buttons) {
+            if (variantValue.HasValue) {
+                button.Style = variantValue;
+            }
+            if (!string.IsNullOrEmpty(iconValue)) {
+                button.IconCustomEmojiId = iconValue;
+            }
+        }
+        return buttons;
     }
 
     /// <summary>

@@ -35,6 +35,8 @@ public class HtmlPageParser {
     /// <returns>A <see cref="PageDefinition"/> representing the parsed page.</returns>
     /// <exception cref="Exception">Thrown when the HTML does not contain a valid view element or page ID.</exception>
     public PageDefinition Parse(string html) {
+        html = SelfClosingTagPreprocessor.Process(html);
+
         if (!html.TrimStart().StartsWith("<html", StringComparison.OrdinalIgnoreCase)) {
             html = $"<html><body>{html}</body></html>";
         }

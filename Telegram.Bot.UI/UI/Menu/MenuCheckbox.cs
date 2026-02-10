@@ -138,11 +138,11 @@ public class MenuCheckbox : AutoComponent {
             displayTitle = await ctx.RenderAsync(templateValue);
         }
 
-        return [
+        return ApplyButtonVariant([
             InlineKeyboardButton.WithCallbackData(
                 text: displayTitle,
                 callbackData: callbackId
             )
-        ];
+        ]);
     }
 }

@@ -8,9 +8,9 @@
     </message>
 
     <components>
-        <command id="sendWithProps" title="Send With Props"></command>
-        <command id="sendWithObject" title="Send With Object"></command>
-        <navigate></navigate>
+        <command id="sendWithProps" title="Send With Props" />
+        <command id="sendWithObject" title="Send With Object" />
+        <navigate />
     </components>
 
     <script>

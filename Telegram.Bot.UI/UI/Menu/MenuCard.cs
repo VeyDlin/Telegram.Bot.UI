@@ -65,9 +65,9 @@ public class MenuCard : AutoComponent, IPaginatedComponent {
             manualPageElements = pageElements;
         } else {
             childElements = element.Children
-                .Where(e => e.TagName.ToLower() != "option"
-                         && e.TagName.ToLower() != "title"
-                         && e.TagName.ToLower() != "message")
+                .Where(e => !e.TagName.Equals("option", StringComparison.OrdinalIgnoreCase)
+                         && !e.TagName.Equals("title", StringComparison.OrdinalIgnoreCase)
+                         && !e.TagName.Equals("message", StringComparison.OrdinalIgnoreCase))
                 .ToList();
         }
     }
@@ -91,7 +91,7 @@ public class MenuCard : AutoComponent, IPaginatedComponent {
                 int rowIndex = 0;
 
                 foreach (var child in pageElement.Children) {
-                    if (child.TagName.ToLower() == "row") {
+                    if (child.TagName.Equals("row", StringComparison.OrdinalIgnoreCase)) {
                         foreach (var rowChild in child.Children) {
                             var component = await scriptPage.CreateChildComponentAsync(rowChild);
                             if (component != null) {
@@ -114,7 +114,7 @@ public class MenuCard : AutoComponent, IPaginatedComponent {
         } else if (childElements != null && childElements.Count > 0) {
             int rowIndex = 0;
             foreach (var child in childElements) {
-                if (child.TagName.ToLower() == "row") {
+                if (child.TagName.Equals("row", StringComparison.OrdinalIgnoreCase)) {
                     foreach (var rowChild in child.Children) {
                         var components = await scriptPage.CreateChildComponentsExpandedAsync(rowChild);
                         foreach (var component in components) {
