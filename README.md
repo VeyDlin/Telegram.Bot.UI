@@ -1,4 +1,4 @@
-﻿# Telegram Bot UI 🤖
+﻿# Telegram Bot UI
 
 Library for creating Telegram bot interfaces based on [Telegram.Bot](https://github.com/TelegramBots/Telegram.Bot)
 
@@ -7,7 +7,7 @@ Visit the repository with a demo project of a photo editor bot [Telegram.Bot.UI.
 [![NuGet](https://img.shields.io/nuget/v/Telegram.Bot.UI.svg)](https://www.nuget.org/packages/Telegram.Bot.UI/)
 [![License](https://img.shields.io/github/license/VeyDlin/Telegram.Bot.UI)](LICENSE)
 
-## ✨ Features
+## Features
 
 - **Two API approaches:**
   - **Declarative XML pages** (`.page` files) - Simple, hot-reloadable, Vue-like syntax
@@ -48,13 +48,13 @@ The library provides numerous interactive components for both declarative and pr
 
 See [Documentation/Components.md](Documentation/Components.md) for detailed component reference.
 
-## 📦 Nuget
+## Nuget
 The Telegram.Bot.UI package is available via [NuGet](https://www.nuget.org/packages/Telegram.Bot.UI)!
 ```
 dotnet add package Telegram.Bot.UI
 ```
 
-## 🚀 Quick Start with Declarative Pages
+## Quick Start with Declarative Pages
 
 The easiest way to create bot interfaces is using declarative `.page` files with Vue-like syntax.
 
@@ -229,7 +229,7 @@ Base.parent                           // Parent page reference
 
 ---
 
-## 🚀 Getting Started (C# API)
+## Getting Started (C# API)
 
 ### Creating a Bot User Class
 
@@ -377,7 +377,7 @@ var bot = new BotWorkerWebHookServer<MyBotUser>((worker, chatId, client, token) 
 await bot.StartAsync();
 ```
 
-## 📝 Logging Configuration
+## Logging Configuration
 
 The library supports Microsoft.Extensions.Logging for comprehensive logging throughout the bot lifecycle.
 
@@ -459,7 +459,7 @@ The library logs the following events:
 **BotUser (BaseBotUser):**
 - Custom error handling in `HandleErrorAsync` (your implementation)
 
-## 📄 Creating Interface Pages (C# MessagePage - Legacy)
+## Creating Interface Pages (C# MessagePage - Legacy)
 
 > **Note:** The `MessagePage` C# API is a legacy approach. For new projects, use declarative `.page` files as shown in the [Quick Start](#-quick-start-with-declarative-pages) section.
 
@@ -517,7 +517,7 @@ In declarative pages, use the `$t()` function:
 <command :title="'✅ ' + $t('Confirm')" />
 ```
 
-## 📂 Resource Structure
+## Resource Structure
 
 Resources for declarative pages:
 
